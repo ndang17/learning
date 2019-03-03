@@ -10,4 +10,5 @@ class MY_Controller extends CI_Controller {
         $data['content'] = $content;
         $this->load->view('template/template',$data);
     }
+
 }

@@ -8,4 +8,9 @@ class C_home extends MY_Controller {
         $content = $this->load->view('page/home','',true);
         parent::template($content);
     }
+
+    public function loadSoal(){
+        $content = $this->load->view('page/soal','',true);
+        parent::template($content);
+    }
 }
