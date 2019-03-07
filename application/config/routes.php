@@ -57,3 +57,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['soal'] = 'c_home/loadSoal';
 $route['siswa'] = 'c_home/siswa';
 $route['guru'] = 'c_home/guru';
+
+$route['__crudUser'] = 'c_rest/crudUser';
+
+

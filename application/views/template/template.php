@@ -17,6 +17,9 @@
     <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
 
     <script>
+
+        window.base_url_js = "<?php echo base_url(); ?>";
+
         function ucWord(str) {
             str = str.toLowerCase().replace(/\b[a-z]/g, function(letter) {
                 return letter.toUpperCase();

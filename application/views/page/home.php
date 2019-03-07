@@ -149,16 +149,17 @@
                 '    <div class="col-md-12">' +
                 '        <div class="form-group">' +
                 '            <label>Username / E-mail</label>' +
-                '            <input class="form-control" autofocus placeholder="Username / E-mail" type="text">' +
+                '            <input class="form-control" autofocus placeholder="Username / E-mail" id="f_User" type="text">' +
+                '            <input class="hide" id="f_Sebagai" value="'+user+'" type="text">' +
                 '        </div>' +
                 '        <div class="form-group">' +
                 '            <label>Password</label>' +
-                '            <input class="form-control" placeholder="Password" type="password">' +
+                '            <input class="form-control" placeholder="Password" id="f_Password" type="password">' +
                 '        </div>' +
                 '        <div style="text-align: right;">' +
                 '            <button class="btn btn-default" id="RegistrasiAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Daftar</button>' +
                 '            <button class="btn btn-default" data-dismiss="modal">Tutup</button>' +
-                '            <button class="btn btn-primary">Masuk</button>' +
+                '            <button class="btn btn-primary" id="btnModalLogin">Masuk</button>' +
                 '        </div>' +
                 '    </div>' +
                 '</div>');
@@ -177,34 +178,152 @@
                 '    <div class="col-md-12">' +
                 '        <div class="form-group">' +
                 '            <label>Nama Lengkap</label>' +
-                '            <input class="form-control" autofocus placeholder="Nama Lengkap">' +
+                '            <input class="form-control" autofocus placeholder="Nama Lengkap" id="f_Nama">' +
+                '            <input class="hide" value="'+user.toLowerCase()+'" id="f_Sebagai">' +
                 '        </div>' +
                 '        <div class="form-group '+formNIS+'">' +
                 '            <label>NIS</label>' +
-                '            <input class="form-control" autofocus placeholder="Nomor Induk Siswa">' +
+                '            <input class="form-control" placeholder="Nomor Induk Siswa" id="f_NIS">' +
+                '        </div>' +
+                '        <div class="form-group '+formNIS+'">' +
+                '            <label>Kelas</label>' +
+                '            <input class="form-control" placeholder="Kelas" type="number" id="f_Kelas">' +
+                '        </div>' +
+                '        <div class="form-group '+formNIS+'">' +
+                '            <label>Nama Sekolah</label>' +
+                '            <input class="form-control" placeholder="Nama Sekolah" type="text" id="f_Sekolah">' +
                 '        </div>' +
                 '        <div class="form-group">' +
                 '            <label>Nama Pengguna (Username)</label>' +
-                '            <input class="form-control" placeholder="Nama Pengguna">' +
+                '            <input class="form-control" placeholder="Nama Pengguna" id="f_Username">' +
                 '            <p class="help-block">Tidak boleh menggunakan spasi</p>' +
                 '        </div>' +
                 '        <div class="form-group">' +
                 '            <label>E-mail</label>' +
-                '            <input class="form-control" placeholder="E-mail">' +
+                '            <input class="form-control" placeholder="E-mail" id="f_Email">' +
                 '        </div>' +
                 '        <div class="form-group">' +
                 '            <label>Password</label>' +
-                '            <input class="form-control" placeholder="Password">' +
+                '            <input class="form-control" placeholder="Password" id="f_Password">' +
                 '        </div>' +
                 '        <div style="text-align: right;">' +
                 '            <button class="btn btn-default" id="loginAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Masuk</button>' +
                 '            <button class="btn btn-default" data-dismiss="modal">Tutup</button>' +
-                '            <button class="btn btn-success">Daftar</button>' +
+                '            <button class="btn btn-success" id="btnInModalDaftar">Daftar</button>' +
                 '        </div>' +
                 '    </div>' +
                 '</div>');
         },500);
+        
     });
+
+    $(document).on('click','#btnInModalDaftar',function () {
+
+        var Nama = $('#f_Nama').val();
+        var Sebagai = $('#f_Sebagai').val();
+        var NIS = $('#f_NIS').val();
+        var Kelas = $('#f_Kelas').val();
+        var Sekolah = $('#f_Sekolah').val();
+        var Username = $('#f_Username').val();
+        var Email = $('#f_Email').val();
+        var Password = $('#f_Password').val();
+
+        var fill = true;
+        if(Sebagai=='siswa'){
+            if(Nama !='' && Nama!=null &&
+            NIS !='' && NIS!=null &&
+            Kelas !='' && Kelas!=null &&
+            Sekolah !='' && Sekolah!=null &&
+            Username !='' && Username!=null &&
+            Email !='' && Email!=null &&
+            Password !='' && Password!=null){
+                fill = true;
+            } else {
+                fill = false;
+            }
+        } else {
+            if(Nama !='' && Nama!=null &&
+                Username !='' && Username!=null &&
+                Email !='' && Email!=null &&
+                Password !='' && Password!=null){
+                fill = true;
+            } else {
+                fill = false;
+            }
+        }
+
+        if(fill){
+
+            loadingPage('#mainModal');
+
+            var data = {
+                action : 'insertNewUser',
+                dataInsert : {
+                    Nama : Nama,
+                    Sebagai : Sebagai,
+                    NIS : NIS,
+                    Kelas : Kelas,
+                    Sekolah : Sekolah,
+                    Username : Username,
+                    Email : Email,
+                    Password : Password
+                }
+            };
+
+            var url = base_url_js+'__crudUser';
+
+            $.post(url,{formData : data},function (result) {
+
+                setTimeout(function () {
+                    $('#myModal').modal('hide');
+                    alert('Pendaftaran berhasil');
+                },500);
+
+            });
+        } else {
+            alert('Semua form wajib diisi');
+        }
+
+
+    });
+
+    $(document).on('click','#btnModalLogin',function () {
+        var Sebagai = $('#f_Sebagai').val();
+        var User = $('#f_User').val();
+        var Password = $('#f_Password').val();
+
+        if(User!='' && User!=null &&
+            Password!='' && Password!=null){
+
+            var data = {
+                action : 'checkLogin',
+                Sebagai : Sebagai,
+                User : User,
+                Password : Password
+            };
+
+            var url = base_url_js+'__crudUser';
+
+            $.post(url,{formData:data},function (result) {
+
+                if(result==1 || result=='1'){
+                    if(Sebagai=='siswa'){
+                        window.location.replace(base_url_js+'siswa');
+                    } else if (Sebagai=='guru') {
+                        window.location.replace(base_url_js+'guru');
+                    } else {
+                        window.location.replace(base_url_js);
+                    }
+                } else {
+
+                    alert('Username / EMail & Password tidak cocok');
+                    window.location.replace(base_url_js);
+                }
+            });
+        }
+
+    });
+
 
 
 
