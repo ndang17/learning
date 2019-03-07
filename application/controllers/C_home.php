@@ -13,4 +13,14 @@ class C_home extends MY_Controller {
         $content = $this->load->view('page/soal','',true);
         parent::template($content);
     }
+
+    public function siswa(){
+        $content = $this->load->view('page/siswa','',true);
+        parent::template($content);
+    }
+
+    public function guru(){
+        $content = $this->load->view('page/guru','',true);
+        parent::template($content);
+    }
 }

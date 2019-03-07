@@ -15,6 +15,18 @@
     <script src="<?php echo base_url('assets/bootstrap/js/jquery.min.js'); ?>"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js'); ?>"></script>
+
+    <script>
+        function ucWord(str) {
+            str = str.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                return letter.toUpperCase();
+            });
+
+            return str;
+
+        }
+    </script>
+
 </head>
 <body>
 
