@@ -21,6 +21,14 @@ class C_home extends MY_Controller {
         return $res;
     }
 
+
+    // Log Out
+    public function logOut(){
+        $this->session->sess_destroy();
+        $content = $this->load->view('page/home','',true);
+        parent::template($content);
+    }
+
     public function index()
     {
         $content = $this->load->view('page/home','',true);
@@ -35,21 +43,50 @@ class C_home extends MY_Controller {
     public function siswa(){
 
         if($this->checkSessions('siswa')){
-            $content = $this->load->view('page/siswa','',true);
+            $data['header'] = $this->header();
+            $content = $this->load->view('page/siswa',$data,true);
             parent::template($content);
         } else {
             $this->index();
         }
-
     }
 
-    public function guru(){
+    public function menu_guru($page){
         if($this->checkSessions('guru')){
-            $content = $this->load->view('page/guru','',true);
+            $data['header'] = $this->header();
+            $data['page'] = $page;
+            $content = $this->load->view('page/menu_guru',$data,true);
+            parent::template($content);
+        } else {
+            $this->index();
+        }
+    }
+
+
+    public function listSoal(){
+        $page = $this->load->view('page/guru_listsoal','',true);
+        $this->menu_guru($page);
+    }
+
+    public function listSiswa(){
+        $page = $this->load->view('page/guru_listsiswa','',true);
+        $this->menu_guru($page);
+    }
+
+    public function buatsoal(){
+        if($this->checkSessions('guru')){
+            $data['header'] = $this->header();
+            $content = $this->load->view('page/buatsoal',$data,true);
             parent::template($content);
         } else {
             $this->index();
         }
 
     }
+
+    private function header(){
+        return $this->load->view('page/header','',true);
+    }
+
+
 }

@@ -76,33 +76,12 @@
     </div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 
 <script>
 
-    function loadingPage(elm){
-        $(elm).html('<div class="row">' +
-            '    <div class="col-md-12" style="text-align: center;">' +
-            '        <h4><i class="fa fa-refresh fa-spin fa-fw"></i> Loading...</h4>' +
-            '    </div>' +
-            '</div>');
-    }
+
 
     $('#btnSiswa').click(function () {
         loadModalUser('siswa');
@@ -149,17 +128,17 @@
                 '    <div class="col-md-12">' +
                 '        <div class="form-group">' +
                 '            <label>Username / E-mail</label>' +
-                '            <input class="form-control" autofocus placeholder="Username / E-mail" id="f_User" type="text">' +
+                '            <input class="form-control form-act" autofocus placeholder="Username / E-mail" id="f_User" type="text">' +
                 '            <input class="hide" id="f_Sebagai" value="'+user+'" type="text">' +
                 '        </div>' +
                 '        <div class="form-group">' +
                 '            <label>Password</label>' +
-                '            <input class="form-control" placeholder="Password" id="f_Password" type="password">' +
+                '            <input class="form-control form-act" placeholder="Password" id="f_Password" type="password">' +
                 '        </div>' +
                 '        <div style="text-align: right;">' +
-                '            <button class="btn btn-default" id="RegistrasiAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Daftar</button>' +
-                '            <button class="btn btn-default" data-dismiss="modal">Tutup</button>' +
-                '            <button class="btn btn-primary" id="btnModalLogin">Masuk</button>' +
+                '            <button class="btn btn-default btn-act" data-usr="'+user+'" id="RegistrasiAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Daftar</button>' +
+                '            <button class="btn btn-default btn-act" data-dismiss="modal">Tutup</button>' +
+                '            <button class="btn btn-primary btn-act" id="btnModalLogin">Masuk</button>' +
                 '        </div>' +
                 '    </div>' +
                 '</div>');
@@ -207,7 +186,7 @@
                 '            <input class="form-control" placeholder="Password" id="f_Password">' +
                 '        </div>' +
                 '        <div style="text-align: right;">' +
-                '            <button class="btn btn-default" id="loginAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Masuk</button>' +
+                '            <button class="btn btn-default" data-usr="'+user+'" id="loginAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Masuk</button>' +
                 '            <button class="btn btn-default" data-dismiss="modal">Tutup</button>' +
                 '            <button class="btn btn-success" id="btnInModalDaftar">Daftar</button>' +
                 '        </div>' +
@@ -295,6 +274,10 @@
         if(User!='' && User!=null &&
             Password!='' && Password!=null){
 
+            loadingButtonSM('#btnModalLogin');
+            $('.form-act, .btn-act').prop('disabled',true);
+
+
             var data = {
                 action : 'checkLogin',
                 Sebagai : Sebagai,
@@ -306,19 +289,24 @@
 
             $.post(url,{formData:data},function (result) {
 
-                if(result==1 || result=='1'){
-                    if(Sebagai=='siswa'){
-                        window.location.replace(base_url_js+'siswa');
-                    } else if (Sebagai=='guru') {
-                        window.location.replace(base_url_js+'guru');
+                setTimeout(function () {
+                    if(result==1 || result=='1'){
+                        if(Sebagai=='siswa'){
+                            window.location.replace(base_url_js+'siswa');
+                        } else if (Sebagai=='guru') {
+                            window.location.replace(base_url_js+'guru/list-soal');
+                        } else {
+                            window.location.replace(base_url_js);
+                        }
                     } else {
-                        window.location.replace(base_url_js);
-                    }
-                } else {
 
-                    alert('Username / EMail & Password tidak cocok');
-                    window.location.replace(base_url_js);
-                }
+                        alert('Username / EMail & Password tidak cocok');
+                        // window.location.replace(base_url_js);
+
+                        $('#btnModalLogin').html('Masuk');
+                        $('.form-act, .btn-act').prop('disabled',false);
+                    }
+                },500);
             });
         }
 

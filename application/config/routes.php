@@ -54,10 +54,18 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 
+$route['logOut'] = 'c_home/logOut';
+
 $route['soal'] = 'c_home/loadSoal';
 $route['siswa'] = 'c_home/siswa';
-$route['guru'] = 'c_home/guru';
+
+$route['guru/list-soal'] = 'c_home/listSoal';
+$route['guru/list-siswa'] = 'c_home/listSiswa';
+
+$route['guru/buatsoal'] = 'c_home/buatsoal';
 
 $route['__crudUser'] = 'c_rest/crudUser';
+
+$route['__crudSoal'] = 'c_rest/crudSoal';
 
 
