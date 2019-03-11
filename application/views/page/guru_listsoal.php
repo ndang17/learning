@@ -36,7 +36,7 @@
            action : 'readSoal',
            ID : sessionID
         };
-
+        $('#divLoadSOal').empty();
         $.post(url,{formData:data},function (jsonResult) {
             if(jsonResult.length>0){
                 $.each(jsonResult,function (i,v) {
