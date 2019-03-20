@@ -35,9 +35,15 @@ class C_home extends MY_Controller {
         parent::template($content);
     }
 
-    public function loadSoal(){
-        $content = $this->load->view('page/soal','',true);
-        parent::template($content);
+    public function loadSoal($IDTest){
+        if($this->checkSessions('siswa')){
+            $data['IDTest'] = $IDTest;
+            $content = $this->load->view('page/soal',$data,true);
+            parent::template($content);
+        } else {
+            $this->index();
+        }
+
     }
 
     public function siswa(){

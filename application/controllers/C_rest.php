@@ -18,6 +18,18 @@ class C_rest extends CI_Controller {
         return (array) $data;
     }
 
+    private function getDateTimeNow(){
+        return date('Y-m-d H:i:s');
+    }
+
+    private function getDateNow(){
+        return date('Y-m-d');
+    }
+
+    private function getTimeNow(){
+        return date('H:i:s');
+    }
+
     public function crudUser(){
 
         $d = $this->getPost();
@@ -28,7 +40,7 @@ class C_rest extends CI_Controller {
             $dataInsertTemp = (array) $d['dataInsert'];
 
             $dataInsert['Password'] = md5($dataInsertTemp['Password']);
-            $dataInsert['CreatedAt'] = date('Y-m-d H:i:s');
+            $dataInsert['CreatedAt'] = $this->getDateTimeNow();
 
             $this->db->insert('user',$dataInsert);
 
@@ -122,6 +134,121 @@ class C_rest extends CI_Controller {
             $this->db->delete('soal_pilihan');
 
             return print_r(1);
+        }
+
+
+        else if($d['action']=='loadListTest'){
+            $data = $this->db->get_where('testing',array(
+                'IDUser' => $this->session->userdata('ID')
+            ))->result_array();
+
+            return print_r(json_encode($data));
+        }
+
+        else if($d['action']=='mulaiTest'){
+
+            // Insert Ke ID Test
+            $arrInset = array(
+                'IDUser' => $this->session->userdata('ID'),
+                'DateTime' => $this->getDateTimeNow()
+            );
+            $this->db->insert('testing',$arrInset);
+            $IDTest = $this->db->insert_id();
+
+
+            // Get Setting
+            $setting = $this->db->get_where('setting',array('IDST'=>1))->result_array();
+
+            $jumlahSoal = $setting[0]['Nilai'];
+
+            // Random Soal
+            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY RAND() LIMIT '.$jumlahSoal)->result_array();
+
+            // Insert Ke tabel testing details
+            if(count($dataSoal)>0){
+                for ($i=0;$i<count($dataSoal);$i++){
+                    $d = $dataSoal[$i];
+                    $arrIn = array(
+                        'IDTest' => $IDTest,
+                        'IDSoal' => $d['ID']
+                    );
+
+                    $this->db->insert('testing_details',$arrIn);
+                }
+            }
+
+            return print_r(1);
+
+        }
+        else if($d['action']=='testOnline'){
+
+            $IDTest = $d['IDTest'];
+
+            $dataIDtest = $this->db->query('SELECT td.*,s.Soal FROM testing_details td 
+                                                      LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                                      WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
+
+
+
+            $soal = [];
+            $arrSudahJawab = [];
+            $noActive = 1;
+            $totalNo = count($dataIDtest);
+
+            // Get Detail Pilihan Ganda dan Alasan
+            if(count($dataIDtest)>0){
+                for($i=0;$i<count($dataIDtest);$i++){
+                    $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where('soal_pilihan'
+                        ,array('IDSoal'=>$dataIDtest[$i]['IDSoal']))->result_array();
+                    $dataIDtest[$i]['PilihanGanda'] = $dataPG;
+
+                    $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where('soal_alasan'
+                        ,array('IDSoal'=>$dataIDtest[$i]['IDSoal']))->result_array();
+                    $dataIDtest[$i]['AlasanJawaban'] = $dataAPJ;
+
+                    if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+                        $soal = $dataIDtest[$i];
+                        break;
+                    } else {
+                        array_push($arrSudahJawab,$dataIDtest[$i]['ID']);
+                    }
+                    $noActive+=1;
+                }
+            }
+
+            $result = array(
+                'Soal' => $soal,
+                'Terjawab' => $arrSudahJawab,
+                'No' => $noActive,
+                'Total' => $totalNo
+            );
+
+            return print_r(json_encode($result));
+
+            exit;
+
+
+            $data = $this->db->query('SELECT * FROM soal ORDER BY RAND() LIMIT 1')->result_array();
+            $dataPG= [];
+            $dataAPJ= [];
+            if(count($data)>0){
+
+                $d = $data[0];
+                // Get Pilihan Ganda
+                $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where('soal_pilihan',array('IDSoal'=>$d['ID']))->result_array();
+
+                $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where('soal_alasan',array('IDSoal'=>$d['ID']))->result_array();
+
+            }
+
+            $result = array(
+                'Soal' => $data,
+                'PilihanGanda' => $dataPG,
+                'AlasanJawaban' => $dataAPJ
+            );
+
+            return print_r(json_encode($result));
+
         }
     }
 

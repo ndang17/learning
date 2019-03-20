@@ -1,8 +1,29 @@
 
 <style>
+    .panelNoSOal {
+        text-align: left;
+        border-bottom: 1px solid #CCCCCC;
+        font-size: 1.5em;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    .panelSoal {
+        position: relative;
+        margin-bottom: 15px;
+        padding: 10px;
+        margin-top: 15px;
+        border: 1px solid #607d8b;
+    }
+
     .list-ok {
+        margin-top: 10px;
         border-left: 10px solid orangered;
         padding-left: 10px;
+    }
+    .panel-jawabantitle {
+        border-bottom: 1px solid #CCCCCC;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
     }
 
     .panelJawaban .panel-heading{
@@ -28,16 +49,26 @@
     .panelAlasan .panel-body{
         border: 1px solid #7282dc;
     }
+    .btn-rate {
+        border-radius: 45px;
+        border: 1px solid #333333;
+        padding: 6px 8px;
+    }
+
+    .btn-rate:hover {
+        border: 1px solid #333333;
+    }
 </style>
 
 <div class="container" style="border-top: 15px solid #8ba8af;border-bottom: 15px solid #8ba8af;">
 
     <div class="row">
         <div class="col-md-12">
-            <div style="background: lightyellow;
-            text-align: center;margin-bottom: 15px;padding: 10px;margin-top: 15px;border: 1px solid #607d8b;">
-                <h3 style="margin-top: 3px;">Soal 2</h3>
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+            <div class="panelSoal">
+                <div class="panelNoSOal">
+                    Soal <span id="viewNoSoal"></span>
+                </div>
+                <div id="showSoal"></div>
             </div>
 
         </div>
@@ -51,48 +82,21 @@
                     <h4 class="panel-title">Jawaban</h4>
                 </div>
                 <div class="panel-body">
-                    <h4 class="list-ok">Jawaban</h4>
-
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-                            Option one is this and that&mdash;be sure to include why it's great
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                            Option two can be something else and selecting it will deselect option one
-                        </label>
-                    </div>
-                    <div class="radio disabled">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3" disabled>
-                            Option three is disabled
-                        </label>
+                    <div class="panel-jawabantitle">
+                        <h4 class="list-ok">Jawaban</h4>
                     </div>
 
+                    <div id="loadJawaban"></div>
 
                     <hr/>
                     <h4 class="list-ok">Tingkat Keyakinan Jawaban</h4>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-                            Option one is this and that&mdash;be sure to include why it's great
-                        </label>
+                    <div style="text-align: center;margin-top: 30px;margin-bottom: 25px;">
+                        <button class="btn btn-success btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
+                        <button class="btn btn-default btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
+                        <button class="btn btn-default btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
+                        <button class="btn btn-default btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
                     </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                            Option two can be something else and selecting it will deselect option one
-                        </label>
-                    </div>
-                    <div class="radio disabled">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3" disabled>
-                            Option three is disabled
-                        </label>
-                    </div>
+
                 </div>
             </div>
 
@@ -103,48 +107,22 @@
                     <h4 class="panel-title">Alasan</h4>
                 </div>
                 <div class="panel-body">
-                    <h4 class="list-ok">Alasan Jawaban</h4>
+                    <div class="panel-jawabantitle">
+                        <h4 class="list-ok">Alasan Jawaban</h4>
+                    </div>
 
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-                            Option one is this and that&mdash;be sure to include why it's great
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                            Option two can be something else and selecting it will deselect option one
-                        </label>
-                    </div>
-                    <div class="radio disabled">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3" disabled>
-                            Option three is disabled
-                        </label>
-                    </div>
+                    <div id="loadAlasanJawaban"></div>
 
 
                     <hr/>
                     <h4 class="list-ok">Tingkat Keyakinan Alasan Jawaban</h4>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-                            Option one is this and that&mdash;be sure to include why it's great
-                        </label>
+                    <div style="text-align: center;margin-top: 30px;margin-bottom: 25px;">
+                        <button class="btn btn-info btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
+                        <button class="btn btn-default btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
+                        <button class="btn btn-default btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
+                        <button class="btn btn-default btn-rate"><i class="fa fa-star-o fa-2x"></i></button>
                     </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-                            Option two can be something else and selecting it will deselect option one
-                        </label>
-                    </div>
-                    <div class="radio disabled">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3" disabled>
-                            Option three is disabled
-                        </label>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -165,9 +143,10 @@
     <div class="row">
         <div class="col-md-10">
             <div class="well">
-                <button class="btn btn-sm btn-success">1</button>
-                <button class="btn btn-sm btn-default">2</button>
-                <button class="btn btn-sm btn-default">3</button>
+                <div id="loadBtn"></div>
+<!--                <button class="btn btn-sm btn-success">1</button>-->
+<!--                <button class="btn btn-sm btn-danger">2</button>-->
+<!--                <button class="btn btn-sm btn-default" disabled>3</button>-->
             </div>
         </div>
         <div class="col-md-2" style="text-align: center;">
@@ -178,3 +157,78 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    
+    $(document).ready(function () {
+        loadSoal();
+    });
+    
+    function loadSoal() {
+        var url = base_url_js+'__crudSoal';
+
+        var data = {
+            action : 'testOnline',
+            IDTest : '<?=$IDTest;?>'
+        };
+
+        $.post(url,{formData:data},function (jsonRssult) {
+
+            console.log(jsonRssult);
+
+            // Load Soal
+            $('#viewNoSoal').html(jsonRssult.No);
+
+            var Soal = jsonRssult.Soal;
+            $('#showSoal').html(Soal.Soal);
+
+
+            // Load Pilihan Ganda
+            var PilihanGanda = Soal.PilihanGanda;
+            if(PilihanGanda.length>0){
+                $.each(PilihanGanda,function (i,v) {
+                    $('#loadJawaban').append('<div class="radio">' +
+                        '                        <label>' +
+                        '                            <input type="radio" name="optionJawaban" id="optJawaban'+v.ID+'" value="'+v.ID+'">'+v.Keterangan+'</label>' +
+                        '                    </div>');
+                });
+            }
+
+            // Load Alasan
+            var AlasanJawaban = Soal.AlasanJawaban;
+            if(AlasanJawaban.length>0){
+                $.each(AlasanJawaban,function (i,v) {
+                    $('#loadAlasanJawaban').append('<div class="radio">' +
+                        '                        <label>' +
+                        '                            <input type="radio" name="optionAlasanJawaban" id="optAlasanJawaban'+v.ID+'" value="'+v.ID+'">'+v.Keterangan+'</label>' +
+                        '                    </div>');
+                });
+            }
+
+
+            // Load Button
+            var TotalBtn = jsonRssult.Total;
+            $('#loadBtn').html('');
+            for(var i=1;i<=TotalBtn;i++){
+                var b = (i!=TotalBtn) ? ' - ' : '';
+
+                var btn_ac = '<button id="btn_'+i+'" class="btn btn-sm btn-default" disabled>'+i+'</button>'
+                if(jsonRssult.Terjawab.length>=i){
+
+                    btn_ac = '<button id="btn_'+i+'" data-id="'+jsonRssult.Terjawab[i-1]+'" class="btn btn-sm btn-success btn-jump">'+i+'</button>'
+                }
+
+                $('#loadBtn').append(btn_ac+''+b);
+            }
+
+            $('#btn_'+jsonRssult.No).removeClass('btn-default btn-success')
+                .addClass('btn-danger').prop('disabled',false);
+
+
+
+        });
+
+    }
+    
+</script>

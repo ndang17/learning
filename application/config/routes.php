@@ -56,7 +56,7 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['logOut'] = 'c_home/logOut';
 
-$route['soal'] = 'c_home/loadSoal';
+$route['soal/(:num)'] = 'c_home/loadSoal/$1';
 $route['siswa'] = 'c_home/siswa';
 
 $route['guru/list-soal'] = 'c_home/listSoal';
