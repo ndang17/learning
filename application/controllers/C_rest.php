@@ -188,66 +188,152 @@ class C_rest extends CI_Controller {
                                                       LEFT JOIN soal s ON (s.ID = td.IDSoal)
                                                       WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
 
+            $soal = 0;
+            if(count($dataIDtest)>0){
+                for($i=0;$i<count($dataIDtest);$i++){
+                    if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+                        $soal = $dataIDtest[$i]['ID'];
+                        break;
+                    }
+                }
+            }
+
+            return print_r(json_encode($soal));
 
 
-            $soal = [];
+        }
+        else if($d['action']=='getJumpSoalOnline'){
+
+            $IDTest = $d['IDTest'];
+            $IDTD = $d['IDTD'];
+
+            // Load Soal
+
+            $dataSoal = $this->db->query('SELECT td.*,s.Soal, s.Jawaban AS Kunci_Jawaban, 
+                                                       s.JawabanAlasan AS Kunci_JawabanAlasan
+                                                        FROM testing_details td 
+                                                      LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                                      WHERE td.ID = "'.$IDTD.'"  
+                                                      LIMIT 1')->result_array();
+
+
+            if(count($dataSoal)>0){
+                $IDSoal = $dataSoal[0]['IDSoal'];
+                $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where('soal_pilihan'
+                    ,array('IDSoal'=>$IDSoal))->result_array();
+                $dataSoal[0]['PilihanGanda'] = $dataPG;
+
+                $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where('soal_alasan'
+                    ,array('IDSoal'=>$IDSoal))->result_array();
+                $dataSoal[0]['AlasanJawaban'] = $dataAPJ;
+            }
+
+
+            $dataIDtest = $this->db->query('SELECT td.*,s.Soal 
+                                                       FROM testing_details td
+                                                      LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                                      WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
+
+
             $arrSudahJawab = [];
             $noActive = 1;
             $totalNo = count($dataIDtest);
 
+            $IDSoalNext = 0;
+
             // Get Detail Pilihan Ganda dan Alasan
             if(count($dataIDtest)>0){
                 for($i=0;$i<count($dataIDtest);$i++){
-                    $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where('soal_pilihan'
-                        ,array('IDSoal'=>$dataIDtest[$i]['IDSoal']))->result_array();
-                    $dataIDtest[$i]['PilihanGanda'] = $dataPG;
-
-                    $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where('soal_alasan'
-                        ,array('IDSoal'=>$dataIDtest[$i]['IDSoal']))->result_array();
-                    $dataIDtest[$i]['AlasanJawaban'] = $dataAPJ;
-
-                    if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
-                        $soal = $dataIDtest[$i];
-                        break;
-                    } else {
+                    $IDSoalNext = $dataIDtest[$i]['ID'];
+                    if($dataIDtest[$i]['Status']==1 || $dataIDtest[$i]['Status']=='1'){
                         array_push($arrSudahJawab,$dataIDtest[$i]['ID']);
+                    } else if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+                        break;
+                    }
+
+                }
+
+                for($i=0;$i<count($dataIDtest);$i++){
+                    if($dataIDtest[$i]['ID']==$IDTD){
+                        break;
                     }
                     $noActive+=1;
                 }
             }
 
             $result = array(
-                'Soal' => $soal,
+                'Soal' => $dataSoal[0],
                 'Terjawab' => $arrSudahJawab,
                 'No' => $noActive,
-                'Total' => $totalNo
+                'Total' => $totalNo,
+                'IDActive' => $IDTD,
+                'IDNext' => $IDSoalNext
+
             );
 
             return print_r(json_encode($result));
+        }
+        else if($d['action']=='getHasilKombinasi'){
 
-            exit;
+            $Jawaban = $d['Jawaban'];
+            $RatingJawaban = $d['RatingJawaban'];
+            $Alasan = $d['Alasan'];
+            $RatingAlasan = $d['RatingAlasan'];
+
+            $data = $this->db->query('SELECT kat.*, k.ID AS IDKombinasi FROM kombinasi k 
+                                              LEFT JOIN kategori kat ON (k.IDKategori = kat.ID)
+                                              WHERE k.Jawaban LIKE "'.$Jawaban.'" 
+                                              AND k.RatingJawaban LIKE "'.$RatingJawaban.'" 
+                                              AND k.Alasan LIKE "'.$Alasan.'" 
+                                              AND k.RatingAlasan LIKE "'.$RatingAlasan.'"')->result_array();
 
 
-            $data = $this->db->query('SELECT * FROM soal ORDER BY RAND() LIMIT 1')->result_array();
-            $dataPG= [];
-            $dataAPJ= [];
-            if(count($data)>0){
+            // Update
+            $IDTD = $d['IDTD'];
+            $dataUpdate = $d['dataUpdate'];
 
-                $d = $data[0];
-                // Get Pilihan Ganda
-                $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where('soal_pilihan',array('IDSoal'=>$d['ID']))->result_array();
+            $dataUpdate['IDKategori'] = $data[0]['ID'];
+            $dataUpdate['IDKombinasi'] = $data[0]['IDKombinasi'];
 
-                $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where('soal_alasan',array('IDSoal'=>$d['ID']))->result_array();
+            $this->db->where('ID', $IDTD);
+            $this->db->update('testing_details',$dataUpdate);
 
+
+            $IDTest = $d['IDTest'];
+
+            $dataIDtest = $this->db->query('SELECT td.*,s.Soal 
+                                                       FROM testing_details td
+                                                      LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                                      WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
+            $IDSoalNext = 0;
+            if(count($dataIDtest)>0){
+                for ($i=0;$i<count($dataIDtest);$i++){
+                    $IDSoalNext = $dataIDtest[$i]['ID'];
+                    if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+                        break;
+                    }
+                }
             }
 
-            $result = array(
-                'Soal' => $data,
-                'PilihanGanda' => $dataPG,
-                'AlasanJawaban' => $dataAPJ
-            );
+            return print_r(json_encode($IDSoalNext));
 
-            return print_r(json_encode($result));
+        }
+
+
+        else if($d['action']=='listIndikator'){
+
+            $CreatedBy = $d['ID'];
+
+            $data = $this->db->order_by('ID','DESC')->get_where('indikator',array('CreatedBy'=>$CreatedBy))->result_array();
+
+            if(count($data)>0){
+                for ($i=0;$i<count($data);$i++){
+                    $data[$i]['Soal'] = $this->db->get_where('soal',
+                        array('IDIndikator'=>$data[$i]['ID']))->result_array();
+                }
+            }
+
+            return print_r(json_encode($data));
 
         }
     }

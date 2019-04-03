@@ -15,10 +15,31 @@
         background: #d1ffd1;
     }
 </style>
+
+<!--<h4 style="border-left: 7px solid orangered;padding-left: 10px;">List Indikator</h4>-->
+
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <h4 class="panel-title pull-left" style="padding-top: 7.5px;">List Indikator</h4>
+        <div class="btn-group pull-right">
+            <a href="#" class="btn btn-success btn-sm">Tambah Indikator</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div id="viewTableIndikator"></div>
+    </div>
+</div>
+
+
+
+<hr/>
+
 <div class="well" style="padding: 15px;text-align: center;">
     <a href="<?php echo base_url('guru/buatsoal'); ?>" class="btn btn-success"><b>Buat Soal</b></a>
 </div>
 <hr/>
+
+
 
 <div id="divLoadSOal"></div>
 
@@ -26,9 +47,62 @@
 
 <script>
 
+
+
     $(document).ready(function () {
        loadListSoal();
+
+       loadListIndikator();
     });
+
+    function loadListIndikator() {
+
+        $('#viewTableIndikator').html('<table class="table table-striped" id="tableIndikator">' +
+            '                <thead>' +
+            '                <tr>' +
+            '                    <th style="width: 2%;">No</th>' +
+            '                    <th>Indikator</th>' +
+            '                    <th style="width: 30%;">Action</th>' +
+            '                </tr>' +
+            '                </thead>' +
+            '                <tbody id="listIndikator"></tbody>' +
+            '            </table>');
+
+        var url = base_url_js+'__crudSoal';
+        var data = {
+            action : 'listIndikator',
+            ID : sessionID
+        };
+        $('#divLoadSOal').empty();
+        $.post(url,{formData:data},function (jsonResult) {
+            console.log(jsonResult);
+
+            if(jsonResult.length>0){
+                var no =1;
+                $.each(jsonResult,function (i,v) {
+
+                    var dataSoal = v.Soal;
+
+                    var btnSoal1 = '<button class="btn btn-sm btn-success"><i class="fa fa-plus-circle"></i> Soal 1</button>';
+                    var btnSoal2 = '<button class="btn btn-sm btn-success"><i class="fa fa-plus-circle"></i> Soal 2</button>';
+                    if(dataSoal.length>0){
+
+                    }
+
+                    $('#listIndikator').append('<tr>' +
+                        '<td>'+no+'</td>' +
+                        '<td>'+v.Indikator+'</td>' +
+                        '<td>'+btnSoal1+' '+btnSoal2+' | <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Indikator</button></td>' +
+                        '</tr>');
+
+                    no++;
+                })
+            }
+
+            $('#tableIndikator').dataTable();
+        });
+
+    };
 
     function loadListSoal() {
         var url = base_url_js+'__crudSoal';

@@ -1,11 +1,11 @@
 <?php echo $header; ?>
 
-<div class="container" style="margin-top: 70px;">
+<div class="container-fluid" style="margin-top: 70px;">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12">
 
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">Profil</h4>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-7">
+                <div class="col-md-9">
 
                     <ul class="nav nav-tabs" style="margin-bottom: 30px;">
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='list-soal'){echo 'active';} ?>"><a href="<?php echo base_url('guru/list-soal'); ?>">Soal</a></li>

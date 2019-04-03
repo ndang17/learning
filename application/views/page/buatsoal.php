@@ -213,7 +213,6 @@
             $('#formJawabanBenar').append('<option value="'+i+'">Pilihan '+i+'</option>');
         }
 
-
     }
 
     function loadJawabanAlasan(){
