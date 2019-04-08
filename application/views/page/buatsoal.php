@@ -2,11 +2,30 @@
 
 
 
+<?php $Indikator = (count($dataIndikator)>0)
+    ? $dataIndikator[0]['Indikator'] : '-'; ?>
+
 <div class="container" style="margin-top: 70px;">
+
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <a href="<?php echo base_url('guru/list-soal'); ?>" class="btn btn-warning"><i class="fa fa-arrow-circle-left margin-right"></i> Kembali ke halaman Guru</a>
+
+            <h3 style="text-align: center;margin-bottom: 25px;font-weight: bold;">-- Soal <?= $TypeSoal ?> --</h3>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div style="padding: 3px 15px 3px 15px;background: #f5f5f5;border: 1px solid #CCCCCC;">
+                <h4><?=$Indikator;?></h4>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
 
-            <a href="<?php echo base_url('guru/list-soal'); ?>" class="btn btn-warning"><i class="fa fa-arrow-circle-left margin-right"></i> Kembali ke halaman Guru</a>
             <hr/>
             <div class="well" style="padding: 15px;">
                 <div class="form-group">
@@ -33,12 +52,12 @@
                             <select class="form-control" id="formJawabanBenar"></select>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
+                    <div class="col-md-8">
+                        <div class="form-group hide">
                             <label style="color: green;">Pembahasan</label>
                             <select class="form-control" id="formTypePembahasan">
                                 <option value="1">Link URL</option>
-                                <option value="2">Unggah File</option>
+                                <option value="2" class="hide">Unggah File</option>
                             </select>
 
                         </div>
@@ -91,14 +110,36 @@
         $('#formSoal').summernote({
             height : 200,
             // width : 700,
-            airMode : false
+            airMode : false,
+            onImageUpload: function(files, editor, welEditable) {
+                sendFile(files[0], editor, welEditable);
+            }
         });
         $('#formPilihan_1,#formAlasan_1').summernote({
             height : 100,
             // width : 700,
-            airMode : false
+            airMode : false,
+            onImageUpload: function(files, editor, welEditable) {
+                sendFile(files[0], editor, welEditable);
+            }
         });
     });
+
+    function sendFile(file, editor, welEditable) {
+        data = new FormData();
+        data.append("file", file);
+        $.ajax({
+            data: data,
+            type: "POST",
+            url: base_url_js+"upload_files",
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(url) {
+                editor.insertImage(welEditable, url);
+            }
+        });
+    }
 
     $('#formTypePembahasan').change(function () {
         typeBahasan();
@@ -108,8 +149,8 @@
         var formTypePembahasan = $('#formTypePembahasan').val();
 
         var v = '<div class="form-group">' +
-            '                            <label>Link URL</label>' +
-            '                            <input class="form-control">' +
+            '                            <label>Link URL Pembahasan</label>' +
+            '                            <input class="form-control" id="formPembahasan">' +
             '                        </div>';
 
         if(formTypePembahasan==2 || formTypePembahasan=='2'){
@@ -229,12 +270,16 @@
     $('#btnSimpanSoal').click(function () {
 
         var formSoal = $('#formSoal').val();
+        var IDIndikator = "<?=$IDIndikator; ?>";
+        var TypeSoal = "<?=$TypeSoal; ?>";
         var formJawabanBenar = $('#formJawabanBenar').val();
         var formJawabanBenarAlasan = $('#formJawabanBenarAlasan').val();
         var formTypePembahasan = $('#formTypePembahasan').val();
 
         var totalPilihan = $('#totalPilihan').val();
         var totalPilihanAlasan = $('#totalPilihanAlasan').val();
+
+        var formPembahasan = $('#formPembahasan').val();
 
         var arrPilihan = [];
         for(var i=1;i<=parseInt(totalPilihan);i++){
@@ -257,10 +302,13 @@
         var data = {
             action : 'addSoal',
             soal : {
+                IDIndikator : IDIndikator,
                 Soal : formSoal,
                 Jawaban : formJawabanBenar,
                 JawabanAlasan : formJawabanBenarAlasan,
                 TypePembahasan : formTypePembahasan,
+                Pembahasan : formPembahasan,
+                TypeSoal : TypeSoal,
                 CreatedBy : sessionID,
                 CreatedAt : moment().format('YYYY-MM-DD H:m:s')
             },
@@ -273,7 +321,10 @@
 
             setTimeout(function () {
                 alert('Soal tersimpan');
-                window.location.href='';
+                // window.location.href='';
+                var IDIndikator = '<?= $IDIndikator ?>';
+                var TypeSoal = '<?= $TypeSoal ?>';
+                window.location.replace(base_url_js+'guru/editsoal/'+IDIndikator+'/'+TypeSoal);
             },500);
 
         });

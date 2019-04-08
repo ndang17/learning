@@ -46,6 +46,27 @@ class C_home extends MY_Controller {
 
     }
 
+    public function loadHasil($IDTest){
+        if($this->checkSessions('siswa')){
+            $data['IDTest'] = $IDTest;
+
+            // Get hasil
+            $dataH = $this->db->query('SELECT td.IDKategori,k.Keterangan, s.Pembahasan, i.Indikator FROM testing_details td 
+                                                    LEFT JOIN kategori k ON (k.ID = td.IDKategori)
+                                                    LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                                    LEFT JOIN indikator i ON (i.ID = s.IDIndikator)
+                                                    WHERE td.IDTest = "'.$IDTest.'"
+                                                     ORDER BY td.ID ASC')->result_array();
+
+            $data['dataHasil'] = $dataH;
+            $content = $this->load->view('page/hasil',$data,true);
+            parent::template($content);
+        } else {
+            $this->index();
+        }
+
+    }
+
     public function siswa(){
 
         if($this->checkSessions('siswa')){
@@ -79,10 +100,49 @@ class C_home extends MY_Controller {
         $this->menu_guru($page);
     }
 
-    public function buatsoal(){
+    public function buatsoal($IDIndikator,$TypeSoal){
         if($this->checkSessions('guru')){
             $data['header'] = $this->header();
+            $data['TypeSoal'] = $TypeSoal;
+            $data['IDIndikator'] = $IDIndikator;
+            $data['dataIndikator'] = $this->db->get_where('indikator',array('ID'=>$IDIndikator))->result_array();
             $content = $this->load->view('page/buatsoal',$data,true);
+            parent::template($content);
+        } else {
+            $this->index();
+        }
+
+    }
+
+    public function editsoal($IDIndikator,$TypeSoal){
+        if($this->checkSessions('guru')){
+            $data['header'] = $this->header();
+            $data['TypeSoal'] = $TypeSoal;
+            $data['IDIndikator'] = $IDIndikator;
+            $data['dataIndikator'] = $this->db->get_where('indikator',array('ID'=>$IDIndikator))->result_array();
+
+            // Load Soal
+            $dataSoal = $this->db->get_where('soal',array(
+                'IDIndikator' => $IDIndikator,
+                'TypeSoal' => ''.$TypeSoal
+            ))->result_array();
+
+            if(count($dataSoal)>0){
+
+                // Load Pilihan jawaban
+                $IDSoal = $dataSoal[0]['ID'];
+                $dataJawaban = $this->db->get_where('soal_pilihan',array('IDSoal'=>$IDSoal))->result_array();
+
+                $dataAlasan = $this->db->get_where('soal_alasan',array('IDSoal'=>$IDSoal))->result_array();
+
+                $dataSoal[0]['PilihanJawaban'] = $dataJawaban;
+                $dataSoal[0]['PilihanAlasan'] = $dataAlasan;
+
+            }
+
+            $data['dataSoal'] = $dataSoal;
+
+            $content = $this->load->view('page/editsoal',$data,true);
             parent::template($content);
         } else {
             $this->index();
@@ -92,6 +152,38 @@ class C_home extends MY_Controller {
 
     private function header(){
         return $this->load->view('page/header','',true);
+    }
+
+
+    // ====
+    public function upload_files(){
+
+        $fileName = $this->input->get('fileName');
+
+        $config['upload_path']          = './uploads/';
+        $config['allowed_types']        = 'gif|jpg|png|jpeg';
+        $config['max_size']             = 8000; // 8 mb
+//        $config['file_name']            = $fileName;
+
+//        if(is_file('./uploads/'.$fileName)){
+//            unlink('./uploads/'.$fileName);
+//        }
+
+        $this->load->library('upload', $config);
+        if ( ! $this->upload->do_upload('userfile')){
+            $error = array('error' => $this->upload->display_errors());
+            return print_r(json_encode($error));
+        }
+        else {
+
+            $success = array('success' => $this->upload->data());
+            $success['success']['formGrade'] = 0;
+
+            return print_r(json_encode($success));
+        }
+
+
+
     }
 
 

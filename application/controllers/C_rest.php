@@ -100,6 +100,45 @@ class C_rest extends CI_Controller {
 
 
         }
+        else if($d['action']=='updateSoal'){
+
+
+            $IDSoal = $d['IDSoal'];
+            $dataIns = $d['soal'];
+
+            $this->db->set($dataIns);
+            $this->db->where('ID', $IDSoal);
+            $this->db->update('soal');
+            $this->db->reset_query();
+
+
+            // Remove data pilihan ganda dan alasan
+            $tables = array('soal_alasan', 'soal_pilihan');
+            $this->db->where('IDSoal', $IDSoal);
+            $this->db->delete($tables);
+            $this->db->reset_query();
+
+            // insert ke soal_pilihan
+            $insert_id = $IDSoal;
+            $arrPilihan = $d['arrPilihan'];
+            for($i=0;$i<count($arrPilihan);$i++){
+                $arrPilihan[$i]['IDSoal'] = $insert_id;
+                $this->db->insert('soal_pilihan',$arrPilihan[$i]);
+            }
+
+
+            // insert ke soal_alasan
+            $arrAlasan = $d['arrAlasan'];
+            for($i=0;$i<count($arrAlasan);$i++){
+                $arrAlasan[$i]['IDSoal'] = $insert_id;
+                $this->db->insert('soal_alasan',$arrAlasan[$i]);
+            }
+
+
+            return print_r(1);
+
+
+        }
         else if($d['action']=='readSoal'){
 
             $dataSoal = $this->db->get_where('soal',array('CreatedBy'=>$d['ID']))->result_array();
@@ -162,7 +201,8 @@ class C_rest extends CI_Controller {
             $jumlahSoal = $setting[0]['Nilai'];
 
             // Random Soal
-            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY RAND() LIMIT '.$jumlahSoal)->result_array();
+//            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY RAND() LIMIT '.$jumlahSoal)->result_array();
+            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY IDIndikator ASC LIMIT '.$jumlahSoal)->result_array();
 
             // Insert Ke tabel testing details
             if(count($dataSoal)>0){
@@ -177,7 +217,7 @@ class C_rest extends CI_Controller {
                 }
             }
 
-            return print_r(1);
+            return print_r(json_encode(array('IDTest'=>$IDTest)));
 
         }
         else if($d['action']=='testOnline'){
@@ -328,12 +368,68 @@ class C_rest extends CI_Controller {
 
             if(count($data)>0){
                 for ($i=0;$i<count($data);$i++){
-                    $data[$i]['Soal'] = $this->db->get_where('soal',
-                        array('IDIndikator'=>$data[$i]['ID']))->result_array();
+                    $data[$i]['Soal1'] = $this->db->get_where('soal',
+                        array('IDIndikator'=>$data[$i]['ID'], 'TypeSoal' => '1'))->result_array();
+                    $data[$i]['Soal2'] = $this->db->get_where('soal',
+                        array('IDIndikator'=>$data[$i]['ID'], 'TypeSoal' => '2'))->result_array();
                 }
             }
 
             return print_r(json_encode($data));
+
+        }
+        else if($d['action']=='crudIndikator'){
+
+            // Cek apakah insert atau update
+
+            $ID = $d['ID'];
+
+            if($ID!=''){
+                $this->db->set('Indikator', $d['Indikator']);
+                $this->db->where('ID', $ID);
+                $this->db->update('indikator');
+
+            } else {
+
+                $dataIns = array(
+                    'Indikator' => $d['Indikator'],
+                    'CreatedBy' => $d['CreatedBy']
+                );
+
+                $this->db->insert('indikator',$dataIns);
+            }
+
+            return print_r(1);
+
+        }
+        else if($d['action']=='removeIndikator'){
+            $ID = $d['ID'];
+
+            $dataSoal = $this->db->select('ID')->get_where('soal',array(
+                'IDIndikator' => $ID
+            ))->result_array();
+
+            if(count($dataSoal)>0){
+                $IDSoal = $dataSoal[0]['ID'];
+
+                // Hapus detail soal
+                $tables = array('soal_pilihan', 'soal_alasan');
+                $this->db->where('IDSoal', $IDSoal);
+                $this->db->delete($tables);
+                $this->db->reset_query();
+            }
+
+
+            // Hapus soal
+            $this->db->where('IDIndikator', $ID);
+            $this->db->delete('soal');
+            $this->db->reset_query();
+
+            $this->db->where('ID', $ID);
+            $this->db->delete('indikator');
+            $this->db->reset_query();
+
+            return print_r(1);
 
         }
     }

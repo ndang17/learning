@@ -16,28 +16,27 @@
     }
 </style>
 
+
 <!--<h4 style="border-left: 7px solid orangered;padding-left: 10px;">List Indikator</h4>-->
 
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
         <h4 class="panel-title pull-left" style="padding-top: 7.5px;">List Indikator</h4>
         <div class="btn-group pull-right">
-            <a href="#" class="btn btn-success btn-sm">Tambah Indikator</a>
+            <a href="#" class="btn btn-success btn-sm btnActIndikator" data-type="insert" data-id="">Tambah Indikator</a>
         </div>
-    </div>
+    </div>insert
     <div class="panel-body">
         <div id="viewTableIndikator"></div>
     </div>
 </div>
 
-
-
 <hr/>
 
-<div class="well" style="padding: 15px;text-align: center;">
-    <a href="<?php echo base_url('guru/buatsoal'); ?>" class="btn btn-success"><b>Buat Soal</b></a>
-</div>
-<hr/>
+<!--<div class="well" style="padding: 15px;text-align: center;">-->
+<!--    <a href="--><?php //echo base_url('guru/buatsoal'); ?><!--" class="btn btn-success"><b>Buat Soal</b></a>-->
+<!--</div>-->
+<!--<hr/>-->
 
 
 
@@ -50,7 +49,7 @@
 
 
     $(document).ready(function () {
-       loadListSoal();
+       // loadListSoal();
 
        loadListIndikator();
     });
@@ -62,7 +61,7 @@
             '                <tr>' +
             '                    <th style="width: 2%;">No</th>' +
             '                    <th>Indikator</th>' +
-            '                    <th style="width: 30%;">Action</th>' +
+            '                    <th style="width: 40%;">Action</th>' +
             '                </tr>' +
             '                </thead>' +
             '                <tbody id="listIndikator"></tbody>' +
@@ -75,31 +74,40 @@
         };
         $('#divLoadSOal').empty();
         $.post(url,{formData:data},function (jsonResult) {
-            console.log(jsonResult);
+            // console.log(jsonResult);
 
             if(jsonResult.length>0){
                 var no =1;
                 $.each(jsonResult,function (i,v) {
 
-                    var dataSoal = v.Soal;
+                    // var dataSoal = ;
 
-                    var btnSoal1 = '<button class="btn btn-sm btn-success"><i class="fa fa-plus-circle"></i> Soal 1</button>';
-                    var btnSoal2 = '<button class="btn btn-sm btn-success"><i class="fa fa-plus-circle"></i> Soal 2</button>';
-                    if(dataSoal.length>0){
+                    var btnSoal1 = (v.Soal1.length>0)
+                        ? '<a href="'+base_url_js+'guru/editsoal/'+v.ID+'/1" class="btn btn-sm btn-primary">Soal 1</a>'
+                        : '<a href="'+base_url_js+'guru/buatsoal/'+v.ID+'/1" class="btn btn-sm btn-primary">Soal 1</a>';
 
-                    }
+                    var btnSoal2 = (v.Soal2.length>0)
+                        ? '<a href="'+base_url_js+'guru/editsoal/'+v.ID+'/2" class="btn btn-sm btn-warning">Soal 2</a>'
+                        : '<a href="'+base_url_js+'guru/buatsoal/'+v.ID+'/2" class="btn btn-sm btn-warning">Soal 2</a>';
+
+
 
                     $('#listIndikator').append('<tr>' +
-                        '<td>'+no+'</td>' +
+                        '<td style="border-right: 1px solid #ccc;">'+no+'</td>' +
                         '<td>'+v.Indikator+'</td>' +
-                        '<td>'+btnSoal1+' '+btnSoal2+' | <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Indikator</button></td>' +
+                        '<td>'+btnSoal1+' '+btnSoal2+' | ' +
+                        '<button class="btn btn-default btn-sm btnActIndikatorRemove" data-id="'+v.ID+'" style="color: red;"><i class="fa fa-trash"></i> Indikator</button> ' +
+                        '<button class="btn btn-default btn-sm btnActIndikator" data-indikator="'+v.Indikator+'" data-id="'+v.ID+'"><i class="fa fa-edit"></i> Indikator</button>' +
+                        '</td>' +
                         '</tr>');
 
                     no++;
                 })
             }
 
-            $('#tableIndikator').dataTable();
+            $('#tableIndikator').dataTable({
+                ordering : false
+            });
         });
 
     };
@@ -229,6 +237,93 @@
         }
 
 
+
+    });
+
+    // ======= Indikator
+    $(document).on('click','.btnActIndikator',function () {
+
+        var ID = $(this).attr('data-id');
+        var indikator = (ID!='')
+            ? $(this).attr('data-indikator') : '';
+
+        $('#myModal .modal-title').html('Indikator');
+
+        $('#myModal .modal-body').html('<div class="form-group">' +
+            '    <label>Indikator</label>' +
+            '    <input class="hide" id="formID" value="'+ID+'" >' +
+            '    <input class="form-control" id="formIndokator" value="'+indikator+'" autofocus>' +
+            '</div>');
+
+        $('#myModal .modal-footer').html('<button type="button" id="btnIndikator" class="btn btn-success">Simpan</button> ' +
+            '<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>');
+
+        $('#myModal').modal({
+            show : true,
+            backdrop : 'static'
+        });
+
+        $('.modal').on('shown.bs.modal', function() {
+            $(this).find('[autofocus]').focus();
+        });
+
+        $('#btnIndikator').click(function () {
+
+            var formIndokator = $('#formIndokator').val();
+
+            if(formIndokator!=''){
+
+                loadingButton('#btnIndikator');
+                $('button[data-dismiss=modal],#formIndokator').prop('disabled',true);
+
+                var formID = $('#formID').val();
+
+                var data = {
+                    action : 'crudIndikator',
+                    ID : formID,
+                    Indikator : formIndokator,
+                    CreatedBy : sessionID
+                };
+
+                var url = base_url_js+'__crudSoal';
+
+                $.post(url,{formData:data},function (result) {
+
+                    toastr.success('Data saved','Success');
+                    loadListIndikator();
+                    setTimeout(function () {
+                        $('#myModal').modal('hide');
+                    },500);
+                });
+
+            } else {
+                toastr.error('Indikator harus di isi');
+            }
+
+        });
+
+
+    });
+
+    $(document).on('click','.btnActIndikatorRemove',function () {
+
+        if(confirm('Jika indikator dihapus, maka soal didalamnya juga akan ' +
+            'terhapus, anda yakin hapus?')){
+            var ID = $(this).attr('data-id');
+
+            var data = {
+              action : 'removeIndikator',
+              ID : ID
+            };
+            var url = base_url_js+'__crudSoal';
+
+            $.post(url,{formData:data},function (result) {
+                toastr.success('Data terhapus','Success');
+                setTimeout(function () {
+                    loadListIndikator();
+                },500);
+            });
+        }
 
     });
 </script>

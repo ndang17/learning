@@ -121,6 +121,7 @@
 
             $.post(url,{formData:data},function (jsonResult) {
 
+                window.location.href = base_url_js+'soal/'+jsonResult.IDTest;
             });
 
         }

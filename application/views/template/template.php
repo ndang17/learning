@@ -27,6 +27,9 @@
     <script src="<?php echo base_url('assets/datatables/') ?>jquery.dataTables.min.js"></script>
     <script src="<?php echo base_url('assets/datatables/') ?>dataTables.bootstrap.min.js"></script>
 
+    <link href="<?php echo base_url('assets/toastr/') ?>toastr.min.css" rel="stylesheet">
+    <script src="<?php echo base_url('assets/toastr/') ?>toastr.min.js"></script>
+
     <script>
 
         window.base_url_js = "<?php echo base_url(); ?>";
