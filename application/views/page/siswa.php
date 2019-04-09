@@ -116,7 +116,8 @@
 
             var url = base_url_js+'__crudSoal';
             var data = {
-              action : 'mulaiTest'
+              action : 'mulaiTest',
+                Token : moment().unix()
             };
 
             $.post(url,{formData:data},function (jsonResult) {

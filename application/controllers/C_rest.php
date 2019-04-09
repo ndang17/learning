@@ -189,7 +189,8 @@ class C_rest extends CI_Controller {
             // Insert Ke ID Test
             $arrInset = array(
                 'IDUser' => $this->session->userdata('ID'),
-                'DateTime' => $this->getDateTimeNow()
+                'DateTime' => $this->getDateTimeNow(),
+                'Token' => $d['Token']
             );
             $this->db->insert('testing',$arrInset);
             $IDTest = $this->db->insert_id();
@@ -218,6 +219,42 @@ class C_rest extends CI_Controller {
             }
 
             return print_r(json_encode(array('IDTest'=>$IDTest)));
+
+        }
+
+        else if($d['action']=='mulaiTest2'){
+
+            $IDTestLama = $d['ID'];
+
+            // Get ID Soal yang IDKategorinya selain 1
+            $dataS = $this->db->get_where('testing_details',
+                array('IDTest' => $IDTestLama, 'IDKategori !=' => '1'))->result_array();
+
+            if(count($dataS)>0){
+
+                // Insert Ke ID Test
+                $arrInset = array(
+                    'IDUser' => $this->session->userdata('ID'),
+                    'DateTime' => $this->getDateTimeNow(),
+                    'Token' => $d['Token']
+                );
+                $this->db->insert('testing',$arrInset);
+                $IDTest = $this->db->insert_id();
+
+                foreach ($dataS AS $item){
+                    $newAr = array(
+                        'IDTest' => $IDTest,
+                        'IDSoal' => $item['IDSoal']
+                    );
+                    $this->db->insert('testing_details',$newAr);
+                }
+
+                return print_r(json_encode(array('IDTest' => $IDTest)));
+            } else {
+                return print_r(json_encode(array('IDTest' => 0)));
+            }
+
+
 
         }
         else if($d['action']=='testOnline'){
@@ -301,13 +338,23 @@ class C_rest extends CI_Controller {
                 }
             }
 
+            //Load All ID
+            $ArrAllID = [];
+            $dataIDAll = $this->db->select('ID')->order_by('ID','ASC')->get_where('testing_details',array('IDTest' => $IDTest))->result_array();
+            if(count($dataIDAll)>0){
+                foreach ($dataIDAll AS $item){
+                   array_push($ArrAllID,$item['ID']);
+                }
+            }
+
             $result = array(
                 'Soal' => $dataSoal[0],
                 'Terjawab' => $arrSudahJawab,
                 'No' => $noActive,
                 'Total' => $totalNo,
                 'IDActive' => $IDTD,
-                'IDNext' => $IDSoalNext
+                'IDNext' => $IDSoalNext,
+                'AllIDTD' => $ArrAllID
 
             );
 

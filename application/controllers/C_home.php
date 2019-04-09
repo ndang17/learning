@@ -50,6 +50,16 @@ class C_home extends MY_Controller {
         if($this->checkSessions('siswa')){
             $data['IDTest'] = $IDTest;
 
+            // Update Status User Test
+            $this->db->set('Status', '1');
+            $this->db->where('ID', $IDTest);
+            $this->db->update('testing');
+            $this->db->reset_query();
+
+            // Get Testing
+            $dataT = $this->db->limit(1)->get_where('testing',array('ID'=>$IDTest))->result_array();
+            $dataTest = $this->db->get_where('testing',array('Token'=>$dataT[0]['Token']))->result_array();
+
             // Get hasil
             $dataH = $this->db->query('SELECT td.IDKategori,k.Keterangan, s.Pembahasan, i.Indikator FROM testing_details td 
                                                     LEFT JOIN kategori k ON (k.ID = td.IDKategori)
@@ -59,6 +69,7 @@ class C_home extends MY_Controller {
                                                      ORDER BY td.ID ASC')->result_array();
 
             $data['dataHasil'] = $dataH;
+            $data['dataTest'] = $dataTest;
             $content = $this->load->view('page/hasil',$data,true);
             parent::template($content);
         } else {

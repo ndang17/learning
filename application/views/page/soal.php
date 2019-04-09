@@ -62,118 +62,9 @@
 
 <div class="container" style="border-top: 15px solid #8ba8af;border-bottom: 15px solid #8ba8af;">
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panelSoal">
-                <div class="panelNoSOal">
-                    Soal <span id="viewNoSoal"></span>
-                </div>
-                <div id="showSoal"></div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-
-            <div class="panel panel-success panelJawaban">
-                <div class="panel-heading">
-                    <h4 class="panel-title">Jawaban</h4>
-                </div>
-                <div class="panel-body">
-                    <div class="panel-jawabantitle">
-                        <h4 class="list-ok">Jawaban</h4>
-                    </div>
-
-                    <div id="loadJawaban"></div>
-
-                    <hr/>
-                    <h4 class="list-ok">Tingkat Keyakinan Jawaban</h4>
-                    <div style="text-align: center;margin-top: 30px;margin-bottom: 25px;">
-                        <button class="btn btn-default btn-rate rate-jawaban" id="1"><i class="fa fa-star-o fa-2x"></i></button>
-                        <button class="btn btn-default btn-rate rate-jawaban" id="2"><i class="fa fa-star-o fa-2x"></i></button>
-                        <button class="btn btn-default btn-rate rate-jawaban" id="3"><i class="fa fa-star-o fa-2x"></i></button>
-                        <button class="btn btn-default btn-rate rate-jawaban" id="4"><i class="fa fa-star-o fa-2x"></i></button>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-        <div class="col-md-6">
-            <div class="panel panel-info panelAlasan">
-                <div class="panel-heading">
-                    <h4 class="panel-title">Alasan</h4>
-                </div>
-                <div class="panel-body">
-                    <div class="panel-jawabantitle">
-                        <h4 class="list-ok">Alasan Jawaban</h4>
-                    </div>
-
-                    <div id="loadAlasanJawaban"></div>
+    <div id="div2ShowSoal"></div>
 
 
-                    <hr/>
-                    <h4 class="list-ok">Tingkat Keyakinan Alasan Jawaban</h4>
-                    <div style="text-align: center;margin-top: 30px;margin-bottom: 25px;">
-                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_1"><i class="fa fa-star-o fa-2x"></i></button>
-                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_2"><i class="fa fa-star-o fa-2x"></i></button>
-                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_3"><i class="fa fa-star-o fa-2x"></i></button>
-                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_4"><i class="fa fa-star-o fa-2x"></i></button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-md-12">
-            <hr/>
-            <div style="text-align: right;">
-                <input id="jawaban" class="hide">
-                <input id="jawabanAlasan" class="hide">
-
-                <input id="formIDNext" class="hide">
-
-                <input id="formJawaban" class="hide">
-                <input id="td_Jawaban" class="hide">
-
-                <input id="formRaingJawaban" class="hide">
-                <input id="td_RaingJawaban" class="hide">
-
-                <input id="formAlasan" class="hide">
-                <input id="td_Alasan" class="hide">
-
-                <input id="formRatingAlasan" class="hide">
-                <input id="td_RatingAlasan" class="hide">
-
-<!--                <button class="btn btn-warning" style="float: left;"><i class="fa fa-arrow-circle-left" style="margin-right : 5px;"></i> Sebelumnya</button>-->
-                <button id="nextSoal" class="btn btn-primary">Selanjutnya <span class="badge" id="nextSoalViewNomor"></span><i class="fa fa-arrow-circle-right" style="margin-left: 5px;"></i> </button>
-                <button id="lihatHasil" class="btn btn-success hide">Selesai</button>
-            </div>
-            <hr/>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-10">
-            <div class="well">
-                <div id="loadBtn"></div>
-<!--                <button class="btn btn-sm btn-success">1</button>-->
-<!--                <button class="btn btn-sm btn-danger">2</button>-->
-<!--                <button class="btn btn-sm btn-default" disabled>3</button>-->
-            </div>
-        </div>
-        <div class="col-md-2" style="text-align: center;">
-            <div class="well">
-                <h3 style="margin-top: 0px;margin-bottom: 0px;">00:80:00</h3>
-            </div>
-
-        </div>
-    </div>
 </div>
 
 
@@ -220,111 +111,226 @@
             IDTD : IDTD
         };
 
+        loadingPage('#div2ShowSoal');
+
         $.post(url,{formData:data},function (jsonResult) {
+
             console.log(jsonResult);
 
-            $('.rate-jawaban').removeClass('btn-success');
-            $('.rate-jawaban').addClass('btn-default');
+            setTimeout(function () {
+                $('#div2ShowSoal').html('<div class="row">' +
+                    '        <div class="col-md-12">' +
+                    '            <div class="panelSoal">' +
+                    '                <div class="panelNoSOal">' +
+                    '                    Soal <span id="viewNoSoal"></span>' +
+                    '                </div>' +
+                    '                <div id="showSoal"></div>' +
+                    '            </div>' +
+                    '' +
+                    '        </div>' +
+                    '    </div>' +
+                    '    <div class="row">' +
+                    '        <div class="col-md-6">' +
+                    '' +
+                    '            <div class="panel panel-success panelJawaban">' +
+                    '                <div class="panel-heading">' +
+                    '                    <h4 class="panel-title">Jawaban</h4>' +
+                    '                </div>' +
+                    '                <div class="panel-body">' +
+                    '                    <div class="panel-jawabantitle">' +
+                    '                        <h4 class="list-ok">Jawaban</h4>' +
+                    '                    </div>' +
+                    '' +
+                    '                    <div id="loadJawaban"></div>' +
+                    '' +
+                    '                    <hr/>' +
+                    '                    <h4 class="list-ok">Tingkat Keyakinan Jawaban</h4>' +
+                    '                    <div style="text-align: center;margin-top: 30px;margin-bottom: 25px;">' +
+                    '                        <button class="btn btn-default btn-rate rate-jawaban" id="1"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                        <button class="btn btn-default btn-rate rate-jawaban" id="2"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                        <button class="btn btn-default btn-rate rate-jawaban" id="3"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                        <button class="btn btn-default btn-rate rate-jawaban" id="4"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                    </div>' +
+                    '' +
+                    '                </div>' +
+                    '            </div>' +
+                    '' +
+                    '        </div>' +
+                    '        <div class="col-md-6">' +
+                    '            <div class="panel panel-info panelAlasan">' +
+                    '                <div class="panel-heading">' +
+                    '                    <h4 class="panel-title">Alasan</h4>' +
+                    '                </div>' +
+                    '                <div class="panel-body">' +
+                    '                    <div class="panel-jawabantitle">' +
+                    '                        <h4 class="list-ok">Alasan Jawaban</h4>' +
+                    '                    </div>' +
+                    '' +
+                    '                    <div id="loadAlasanJawaban"></div>' +
+                    '' +
+                    '' +
+                    '                    <hr/>' +
+                    '                    <h4 class="list-ok">Tingkat Keyakinan Alasan Jawaban</h4>' +
+                    '                    <div style="text-align: center;margin-top: 30px;margin-bottom: 25px;">' +
+                    '                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_1"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_2"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_3"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                        <button class="btn btn-default btn-rate rate-alasan" id="alasan_4"><i class="fa fa-star-o fa-2x"></i></button>' +
+                    '                    </div>' +
+                    '' +
+                    '                </div>' +
+                    '            </div>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '    <div class="row">' +
+                    '        <div class="col-md-12">' +
+                    '            <hr/>' +
+                    '            <div style="text-align: right;">' +
+                    '                <input id="jawaban" class="hide">' +
+                    '                <input id="jawabanAlasan" class="hide">' +
+                    '' +
+                    '                <input id="formIDNext" class="hide">' +
+                    '                <input id="formIDNo" class="hide">' +
+                    '' +
+                    '                <input id="formJawaban" class="hide">' +
+                    '                <input id="td_Jawaban" class="hide">' +
+                    '' +
+                    '                <input id="formRaingJawaban" class="hide">' +
+                    '                <input id="td_RaingJawaban" class="hide">' +
+                    '' +
+                    '                <input id="formAlasan" class="hide">' +
+                    '                <input id="td_Alasan" class="hide">' +
+                    '' +
+                    '                <input id="formRatingAlasan" class="hide">' +
+                    '                <input id="td_RatingAlasan" class="hide">' +
+                    '' +
+                    '<!--                <button class="btn btn-warning" style="float: left;"><i class="fa fa-arrow-circle-left" style="margin-right : 5px;"></i> Sebelumnya</button>-->' +
+                    '                <button id="nextSoal" class="btn btn-primary">Selanjutnya <span class="badge" id="nextSoalViewNomor"></span><i class="fa fa-arrow-circle-right" style="margin-left: 5px;"></i> </button>' +
+                    '                <button id="lihatHasil" class="btn btn-success hide">Selesai</button>' +
+                    '            </div>' +
+                    '            <hr/>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '    <div class="row">' +
+                    '        <div class="col-md-10">' +
+                    '            <div class="well">' +
+                    '                <div id="loadBtn"></div>' +
+                    '            </div>' +
+                    '        </div>' +
+                    '        <div class="col-md-2" style="text-align: center;">' +
+                    '            <div class="well">' +
+                    '                <h3 style="margin-top: 0px;margin-bottom: 0px;">00:80:00</h3>' +
+                    '            </div>' +
+                    '' +
+                    '        </div>' +
+                    '    </div>');
+
+                $('.rate-jawaban').removeClass('btn-success');
+                $('.rate-jawaban').addClass('btn-default');
 
 
-            $('.rate-alasan').removeClass('btn-info');
-            $('.rate-alasan').addClass('btn-default');
+                $('.rate-alasan').removeClass('btn-info');
+                $('.rate-alasan').addClass('btn-default');
 
-            // Load Soal
-            $('#viewNoSoal').html(jsonResult.No);
+                // Load Soal
+                $('#viewNoSoal').html(jsonResult.No);
 
-            var Soal = jsonResult.Soal;
+                var Soal = jsonResult.Soal;
 
-            // Load Rate Jawaban
-            if(Soal.Jawaban_K!=null && Soal.Jawaban_K!=''){
-                loadRate_Jawaban(Soal.Jawaban_K);
-            }
-            if(Soal.Alasan_K!=null && Soal.Alasan_K!=''){
-                loadRate_Alasan(Soal.Alasan_K)
-            }
-
-            $('#showSoal').html(Soal.Soal);
-
-            $('#jawaban').val(Soal.Kunci_Jawaban);
-            $('#jawabanAlasan').val(Soal.Kunci_JawabanAlasan);
-
-
-            // Load Pilihan Ganda
-            var PilihanGanda = Soal.PilihanGanda;
-            if(PilihanGanda.length>0){
-                $('#loadJawaban').empty();
-                $.each(PilihanGanda,function (i,v) {
-
-                    var sc = (parseInt(Soal.Jawaban) == parseInt(v.Urutan)) ? 'checked' : '';
-
-                    $('#loadJawaban').append('<div class="radio">' +
-                        '                        <label>' +
-                        '                            <input type="radio" '+sc+' name="optionJawaban" class="formPilihanGanda" id="optJawaban'+v.Urutan+'" value="'+v.Urutan+'">'+v.Keterangan+'</label>' +
-                        '                    </div>');
-                });
-
-                if(Soal.Jawaban!='' && Soal.Jawaban!=null){
-                    loadJawaban(Soal.Jawaban);
+                // Load Rate Jawaban
+                if(Soal.Jawaban_K!=null && Soal.Jawaban_K!=''){
+                    loadRate_Jawaban(Soal.Jawaban_K);
                 }
-            }
-
-            // Load Alasan
-            var AlasanJawaban = Soal.AlasanJawaban;
-            if(AlasanJawaban.length>0){
-                $('#loadAlasanJawaban').empty();
-                $.each(AlasanJawaban,function (i,v) {
-
-                    var sc = (parseInt(Soal.Alasan) == parseInt(v.Urutan)) ? 'checked' : '';
-
-                    $('#loadAlasanJawaban').append('<div class="radio">' +
-                        '                        <label>' +
-                        '                            <input type="radio" '+sc+' name="optionAlasanJawaban" class="formPilihanGandaAlasan" id="optAlasanJawaban'+v.Urutan+'" value="'+v.Urutan+'">'+v.Keterangan+'</label>' +
-                        '                    </div>');
-                });
-
-                if(Soal.Alasan!='' && Soal.Alasan!=null){
-                    loadJawabanAlasan(Soal.Alasan);
-                }
-            }
-
-
-            // Load Button
-            var TotalBtn = jsonResult.Total;
-            $('#loadBtn').html('');
-            for(var i=1;i<=TotalBtn;i++){
-                var b = (i!=TotalBtn) ? ' - ' : '';
-
-                var btn_ac = '<button id="btn_'+i+'" class="btn btn-sm btn-default" disabled>'+i+'</button>'
-                if(jsonResult.Terjawab.length>=i){
-
-                    btn_ac = '<button id="btn_'+i+'" data-id="'+jsonResult.Terjawab[i-1]+'" class="btn btn-sm btn-success btn-jump">'+i+'</button>'
+                if(Soal.Alasan_K!=null && Soal.Alasan_K!=''){
+                    loadRate_Alasan(Soal.Alasan_K)
                 }
 
-                $('#loadBtn').append(btn_ac+''+b);
-            }
+                $('#showSoal').html(Soal.Soal);
 
-            $('#btn_'+jsonResult.No).removeClass('btn-default btn-success')
-                .addClass('btn-danger').prop('disabled',false);
+                $('#jawaban').val(Soal.Kunci_Jawaban);
+                $('#jawabanAlasan').val(Soal.Kunci_JawabanAlasan);
 
-            $('#nextSoal').prop('disabled',false);
-            $('#nextSoal').attr('data-id',jsonResult.IDNext);
 
-            $('#formIDNext').val(jsonResult.IDNext);
+                // Load Pilihan Ganda
+                var PilihanGanda = Soal.PilihanGanda;
+                if(PilihanGanda.length>0){
+                    $('#loadJawaban').empty();
+                    $.each(PilihanGanda,function (i,v) {
 
-            var nonext = (jsonResult.No == (parseInt(jsonResult.Terjawab.length)+1))
-                ? (parseInt(jsonResult.Terjawab.length)+2)
-                : (parseInt(jsonResult.Terjawab.length)+1);
+                        var sc = (parseInt(Soal.Jawaban) == parseInt(v.Urutan)) ? 'checked' : '';
 
-            $('#nextSoalViewNomor').html('No : '+nonext);
+                        $('#loadJawaban').append('<div class="radio">' +
+                            '                        <label>' +
+                            '                            <input type="radio" '+sc+' name="optionJawaban" class="formPilihanGanda" id="optJawaban'+v.Urutan+'" value="'+v.Urutan+'">'+v.Keterangan+'</label>' +
+                            '                    </div>');
+                    });
 
-            if(parseInt(nonext)>= parseInt(jsonResult.Total)){
-                $('#nextSoal').addClass('hide');
-                $('#lihatHasil').removeClass('hide');
-            } else {
-                $('#nextSoal').removeClass('hide');
-                $('#lihatHasil').addClass('hide');
-            }
+                    if(Soal.Jawaban!='' && Soal.Jawaban!=null){
+                        loadJawaban(Soal.Jawaban);
+                    }
+                }
 
+                // Load Alasan
+                var AlasanJawaban = Soal.AlasanJawaban;
+                if(AlasanJawaban.length>0){
+                    $('#loadAlasanJawaban').empty();
+                    $.each(AlasanJawaban,function (i,v) {
+
+                        var sc = (parseInt(Soal.Alasan) == parseInt(v.Urutan)) ? 'checked' : '';
+
+                        $('#loadAlasanJawaban').append('<div class="radio">' +
+                            '                        <label>' +
+                            '                            <input type="radio" '+sc+' name="optionAlasanJawaban" class="formPilihanGandaAlasan" id="optAlasanJawaban'+v.Urutan+'" value="'+v.Urutan+'">'+v.Keterangan+'</label>' +
+                            '                    </div>');
+                    });
+
+                    if(Soal.Alasan!='' && Soal.Alasan!=null){
+                        loadJawabanAlasan(Soal.Alasan);
+                    }
+                }
+
+
+                // Load Button
+                var TotalBtn = jsonResult.Total;
+                $('#loadBtn').html('');
+                for(var i=1;i<=TotalBtn;i++){
+                    var b = (i!=TotalBtn) ? ' - ' : '';
+
+                    var btn_ac = '<button id="btn_'+i+'" class="btn btn-sm btn-default" disabled>'+i+'</button>'
+                    if(jsonResult.Terjawab.length>=i){
+                        btn_ac = '<button id="btn_'+i+'" data-id="'+jsonResult.AllIDTD[i-1]+'" class="btn btn-sm btn-success btn-jump">'+i+'</button>'
+                    }
+
+                    // btn_ac = '<button id="btn_'+i+'" data-id="'+jsonResult.Terjawab[i-1]+'" class="btn btn-sm btn-success btn-jump">'+i+'</button>'
+
+                    $('#loadBtn').append(btn_ac+''+b);
+                }
+
+                $('#btn_'+jsonResult.No).removeClass('btn-default btn-success')
+                    .addClass('btn-danger').prop('disabled',false);
+
+                $('#nextSoal').prop('disabled',false);
+                $('#nextSoal').attr('data-id',jsonResult.IDNext);
+
+                $('#formIDNext').val(jsonResult.IDNext);
+                $('#formIDNo').val(jsonResult.IDActive);
+                // $('#formIDNext').val(1);
+
+                var nonext = (jsonResult.No == (parseInt(jsonResult.Terjawab.length)+1))
+                    ? (parseInt(jsonResult.Terjawab.length)+2)
+                    : (parseInt(jsonResult.Terjawab.length)+1);
+
+                $('#nextSoalViewNomor').html('No : '+nonext);
+
+                if(parseInt(nonext)> parseInt(jsonResult.Total)){
+                    $('#nextSoal').addClass('hide');
+                    $('#lihatHasil').removeClass('hide');
+                } else {
+                    $('#nextSoal').removeClass('hide');
+                    $('#lihatHasil').addClass('hide');
+                }
+
+            },500);
 
         });
 
@@ -347,13 +353,12 @@
         loadNilaiKategori();
     }
 
-    $('.rate-jawaban').click(function () {
+    $(document).on('click','.rate-jawaban',function () {
         $('.rate-jawaban').removeClass('btn-success');
         $('.rate-jawaban').addClass('btn-default');
 
         var id = $(this).attr('id');
         loadRate_Jawaban(id);
-
     });
 
     function loadRate_Jawaban(id) {
@@ -385,14 +390,13 @@
         loadNilaiKategori();
     }
 
-    $('.rate-alasan').click(function () {
+    $(document).on('click','.rate-alasan',function () {
         $('.rate-alasan').removeClass('btn-info');
         $('.rate-alasan').addClass('btn-default');
 
         var id = $(this).attr('id').split('_')[1];
 
         loadRate_Alasan(id);
-
     });
 
     function loadRate_Alasan(id) {
@@ -421,7 +425,7 @@
         formAlasan!='' && formAlasan!=null &&
         formRatingAlasan!='' && formRatingAlasan!=null){
 
-            var IDTD = $('#formIDNext').val();
+            var IDTD = $('#formIDNo').val();
 
             var td_Jawaban = $('#td_Jawaban').val();
             var td_RaingJawaban = $('#td_RaingJawaban').val();
@@ -454,9 +458,7 @@
 
     }
 
-    $('#nextSoal').click(function () {
-
-
+    $(document).on('click','#nextSoal',function () {
         var formJawaban = $('#formJawaban').val();
         var formRaingJawaban = $('#formRaingJawaban').val();
         var formAlasan = $('#formAlasan').val();
@@ -480,11 +482,9 @@
         } else {
             alert('Lengkapi jawaban terlebih dahulu');
         }
-
     });
 
-    $('#lihatHasil').click(function () {
-
+    $(document).on('click','#lihatHasil',function () {
         var formJawaban = $('#formJawaban').val();
         var formRaingJawaban = $('#formRaingJawaban').val();
         var formAlasan = $('#formAlasan').val();
@@ -495,7 +495,11 @@
             formAlasan!='' && formAlasan!=null &&
             formRatingAlasan!='' && formRatingAlasan!=null){
 
-            alert('Ok cuy lihat hasilmu');
+            loadingButtonSM('#lihatHasil');
+
+            setTimeout(function () {
+                window.location.replace(base_url_js+'hasil/<?=$IDTest;?>');
+            },500);
 
 
         } else {
