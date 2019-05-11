@@ -25,7 +25,7 @@
         <div class="btn-group pull-right">
             <a href="#" class="btn btn-success btn-sm btnActIndikator" data-type="insert" data-id="">Tambah Indikator</a>
         </div>
-    </div>insert
+    </div>
     <div class="panel-body">
         <div id="viewTableIndikator"></div>
     </div>
@@ -61,7 +61,7 @@
             '                <tr>' +
             '                    <th style="width: 2%;">No</th>' +
             '                    <th>Indikator</th>' +
-            '                    <th style="width: 40%;">Action</th>' +
+            '                    <th style="width: 60%;">Action</th>' +
             '                </tr>' +
             '                </thead>' +
             '                <tbody id="listIndikator"></tbody>' +
@@ -92,10 +92,12 @@
 
 
 
+                    var btnPembahasan = '<a href="'+base_url_js+'guru/listpembahasan/'+v.ID+'" class="btn btn-sm btn-success">Pembahasan</a>';
+
                     $('#listIndikator').append('<tr>' +
                         '<td style="border-right: 1px solid #ccc;">'+no+'</td>' +
                         '<td>'+v.Indikator+'</td>' +
-                        '<td>'+btnSoal1+' '+btnSoal2+' | ' +
+                        '<td>'+btnSoal1+' '+btnSoal2+' | '+btnPembahasan+' | ' +
                         '<button class="btn btn-default btn-sm btnActIndikatorRemove" data-id="'+v.ID+'" style="color: red;"><i class="fa fa-trash"></i> Indikator</button> ' +
                         '<button class="btn btn-default btn-sm btnActIndikator" data-indikator="'+v.Indikator+'" data-id="'+v.ID+'"><i class="fa fa-edit"></i> Indikator</button>' +
                         '</td>' +

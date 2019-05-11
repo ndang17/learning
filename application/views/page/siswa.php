@@ -29,10 +29,10 @@
 <!--</pre>-->
 
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-1">
 
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">Profil</h4>
@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-7">
+                <div class="col-md-8">
                     <div class="alert alert-warning" role="alert">
                         <b>Aturan E-Diagnostic Test</b>
                         <ol>
@@ -91,15 +91,28 @@
                 $('#listTesting').html('');
                 $.each(jsonResult,function (i,v) {
 
-                    var btnAct = (v.Status==1 || v.Status=='1') ? '<a href="'+base_url_js+'hasil/'+v.ID+'" class="btn btn-primary btn-block btn-sm btn-act-test">Lihat hasil tes</a>'
-                        : '<a href="'+base_url_js+'soal/'+v.ID+'" class="btn btn-warning btn-block btn-sm btn-act-test">Lanjut mengerjakan</a>';
+                    var Details = v.Details;
+
+                    var btnAct = '';
+
+                    if(Details.length>0){
+                        $.each(Details,function (i2,v2) {
+                            var btnAct2 = (v2.Status==1 || v2.Status=='1') ? '<div class="col-md-4"><a href="'+base_url_js+'hasil/'+v2.ID+'" class="btn btn-primary btn-block btn-sm btn-act-test">Lihat hasil tes</a></div>'
+                                : '<div class="col-md-4"><a href="'+base_url_js+'soal/'+v2.ID+'" class="btn btn-warning btn-block btn-sm btn-act-test">Lanjut mengerjakan</a></div>';
+
+                            btnAct = btnAct+''+btnAct2;
+
+                        });
+                    }
+
+
 
                     var cl = (v.Status==1 || v.Status=='1') ? 'tb-selesai' : 'tb-blm-selesai';
 
                     $('#listTesting').append('<div class="thumbnail tb-list '+cl+'">' +
                         '                       <div class="row">' +
-                        '                           <div class="col-md-6"><div class="timeTes" >'+moment(v.DateTime).format('dddd, DD MMMM YYYY')+'</div></div>' +
-                        '                           <div class="col-md-6">'+btnAct+'</div>' +
+                        '                           <div class="col-md-4"><div class="timeTes" >'+moment(v.DateTime).format('dddd, DD MMMM YYYY')+'</div></div>' +
+                        '                           '+btnAct+
                         '                       </div>' +
                         '                    </div>');
                 });

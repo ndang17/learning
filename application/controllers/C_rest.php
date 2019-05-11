@@ -177,9 +177,26 @@ class C_rest extends CI_Controller {
 
 
         else if($d['action']=='loadListTest'){
-            $data = $this->db->get_where('testing',array(
-                'IDUser' => $this->session->userdata('ID')
-            ))->result_array();
+//            $data = $this->db->get_where('testing',array(
+//                'IDUser' => $this->session->userdata('ID')
+//            ))->result_array();
+
+            $data = $this->db->query('SELECT Token, DateTime FROM testing WHERE 
+                                              IDUser = "'.$this->session->userdata('ID').'" 
+                                              GROUP BY Token
+                                              ORDER BY ID ASC
+                                               ')->result_array();
+
+            if(count($data)>0){
+                for($i=0;$i<count($data);$i++){
+                    $dataDetail = $this->db->order_by('ID','ASC')->get_where('testing',
+                        array('Token' => $data[$i]['Token']))
+                        ->result_array();
+
+                    $data[$i]['Details'] = $dataDetail;
+
+                }
+            }
 
             return print_r(json_encode($data));
         }
@@ -479,6 +496,47 @@ class C_rest extends CI_Controller {
             return print_r(1);
 
         }
+    }
+
+    public function crudPembahasan(){
+        $d = $this->getPost();
+
+        if($d['action']=='insertPembahasan'){
+
+            $dataInsert = (array) $d['dataInsert'];
+
+            $this->db->insert('pembahasan', $dataInsert);
+            $insert_id = $this->db->insert_id();
+
+            return print_r(json_encode(array(
+                'insert_id' => $insert_id
+            )));
+
+        }
+        else if($d['action']=='showPembahasan'){
+
+            $data = $this->db->get_where('pembahasan'
+                ,array('IDIndikator'=>$d['IDIndikator']))->result_array();
+
+            return print_r(json_encode($data));
+
+        }
+        else if($d['action']=='removePembahasan'){
+
+            if($d['Type']=='1' || $d['Type']==1 || $d['Type']=='3'
+                || $d['Type']==3){
+                $this->db->where('ID', $d['ID']);
+                $this->db->delete('pembahasan');
+
+                return print_r(1);
+            }
+            else {
+                $data = $this->db->get_where('pembahasan'
+                    ,array('ID'=>$d['ID']))->result_array();
+            }
+
+        }
+
     }
 
 }

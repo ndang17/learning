@@ -15,7 +15,8 @@
 <!--                                        --><?php //print_r($this->session->userdata); ?>
 
                             <div style="text-align: center;">
-                                <img src="<?php echo base_url('images/icon/man.png'); ?>" style="width: 100%;max-width: 100px;">
+                                <div style="margin-bottom: 10px;"><img src="<?php echo base_url('images/icon/man.png'); ?>" style="width: 100%;max-width: 100px;"></div>
+                                <button class="btn btn-sm btn-default">Ganti Foto</button>
                                 <h3><?php echo $this->session->userdata('Nama'); ?><br/>
                                     <small><a><?php echo $this->session->userdata('Email'); ?></a>
                                         <br/>User ID : <?php echo $this->session->userdata('ID'); ?>

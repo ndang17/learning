@@ -161,6 +161,20 @@ class C_home extends MY_Controller {
 
     }
 
+    public function listpembahasan($IDIndikator){
+        if($this->checkSessions('guru')){
+            $data['header'] = $this->header();
+
+            $data['IDIndikator'] = $IDIndikator;
+            $data['dataIndikator'] = $this->db->get_where('indikator',array('ID'=>$IDIndikator))->result_array();
+
+            $content = $this->load->view('page/listpembahasan',$data,true);
+            parent::template($content);
+        } else {
+            $this->index();
+        }
+    }
+
     private function header(){
         return $this->load->view('page/header','',true);
     }
