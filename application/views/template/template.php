@@ -33,6 +33,11 @@
 
     <script src="<?php echo base_url('assets/img-fitter/jquery.imgFitter.js'); ?>"></script>
 
+    <script type="text/javascript" src="<?php echo base_url('assets/countdown/jquery.countdown.min.js'); ?>"></script>
+
+    <!-- Canvas -->
+    <script type="text/javascript" src="<?php echo base_url('assets/canvas/canvasjs.min.js'); ?>"></script>
+
     <script>
 
         window.base_url_js = "<?php echo base_url(); ?>";
@@ -54,6 +59,28 @@
                 '</div>');
         }
 
+        function loadSelectOption_sekolah(elm,selected='') {
+            var url = base_url_js+'__selectOption';
+
+            var data = {
+                action : 'SO_sekolah'
+            };
+
+            $.post(url,{formData : data},function (jsonResult) {
+               console.log(jsonResult);
+               if(jsonResult.length>0){
+
+                   $.each(jsonResult,function (i,v) {
+
+                       $(elm).append('<option value="'+v.ID+'">'+v.Name+'</option>');
+                   })
+
+               }
+            });
+
+
+        }
+
         function loadingButton(elm) {
             $(elm).html('<i class="fa fa-refresh fa-spin fa-fw"></i> Loading...').prop('disabled',true);
         }
@@ -67,6 +94,10 @@
     <style>
         .margin-right {
             margin-right: 5px;
+        }
+        body {
+            /* 1 7 8 9 */
+            /*background-image: url('*/<?//= base_url("images/bg/1 (9).jpg") ?>/*'); !important;*/
         }
     </style>
 

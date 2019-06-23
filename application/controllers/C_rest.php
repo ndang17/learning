@@ -30,6 +30,16 @@ class C_rest extends CI_Controller {
         return date('H:i:s');
     }
 
+    public function selectOption(){
+        $d = $this->getPost();
+
+        if($d['action']=='SO_sekolah'){
+            $data = $this->db->order_by('Name','ASC')->get('sekolah')->result_array();
+
+            return print_r(json_encode($data));
+        }
+    }
+
     public function crudUser(){
 
         $d = $this->getPost();
@@ -46,7 +56,8 @@ class C_rest extends CI_Controller {
 
             return print_r(1);
 
-        } else if ($d['action']=='checkLogin') {
+        }
+        else if ($d['action']=='checkLogin') {
             $Sebagai = $d['Sebagai'];
             $User = $d['User'];
             $Pass = md5($d['Password']);
@@ -67,6 +78,7 @@ class C_rest extends CI_Controller {
             return print_r($ret);
 
         }
+
 
     }
 
@@ -189,9 +201,10 @@ class C_rest extends CI_Controller {
 
             if(count($data)>0){
                 for($i=0;$i<count($data);$i++){
-                    $dataDetail = $this->db->order_by('ID','ASC')->get_where('testing',
-                        array('Token' => $data[$i]['Token']))
-                        ->result_array();
+                    $dataDetail = $this->db->query('SELECT t.*, tm.Time FROM testing t 
+                                                            LEFT JOIN timer tm ON (t.ID = tm.IDTest)
+                                                            WHERE t.Token = "'.$data[$i]['Token'].'" 
+                                                            ORDER BY t.ID ASC')->result_array();
 
                     $data[$i]['Details'] = $dataDetail;
 
@@ -207,10 +220,23 @@ class C_rest extends CI_Controller {
             $arrInset = array(
                 'IDUser' => $this->session->userdata('ID'),
                 'DateTime' => $this->getDateTimeNow(),
-                'Token' => $d['Token']
+                'Token' => md5($d['Token'].'_'.$this->session->userdata('ID'))
             );
             $this->db->insert('testing',$arrInset);
             $IDTest = $this->db->insert_id();
+
+            // Inserting ke timer
+            $startTime = '00:00:00';
+            $settingTime = $this->db->get_where('setting',array('IDST'=>2))->result_array();
+            $cenvertedTime = date('H:i:s',strtotime('+'.$settingTime[0]['Nilai'].' minutes',strtotime($startTime)));
+
+            $insTm = array(
+                'IDTest' => $IDTest,
+                'Time' => $cenvertedTime
+            );
+
+            $this->db->insert('timer',$insTm);
+
 
 
             // Get Setting
@@ -220,7 +246,7 @@ class C_rest extends CI_Controller {
 
             // Random Soal
 //            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY RAND() LIMIT '.$jumlahSoal)->result_array();
-            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY IDIndikator ASC LIMIT '.$jumlahSoal)->result_array();
+            $dataSoal = $this->db->query('SELECT ID FROM soal WHERE TypeSoal = "1" ORDER BY IDIndikator ASC LIMIT '.$jumlahSoal)->result_array();
 
             // Insert Ke tabel testing details
             if(count($dataSoal)>0){
@@ -253,16 +279,49 @@ class C_rest extends CI_Controller {
                 $arrInset = array(
                     'IDUser' => $this->session->userdata('ID'),
                     'DateTime' => $this->getDateTimeNow(),
-                    'Token' => $d['Token']
+                    'Token' => $d['Token'],
+                    'Type' => '2'
                 );
                 $this->db->insert('testing',$arrInset);
                 $IDTest = $this->db->insert_id();
 
+                $startTime = '00:00:00';
+                $settingTime = $this->db->get_where('setting',array('IDST'=>2))->result_array();
+                $cenvertedTime = date('H:i:s',strtotime('+'.$settingTime[0]['Nilai'].' minutes',strtotime($startTime)));
+
+                $insTm = array(
+                    'IDTest' => $IDTest,
+                    'Time' => $cenvertedTime
+                );
+
+                $this->db->insert('timer',$insTm);
+
+
                 foreach ($dataS AS $item){
+
+                    // Get data soal
+                    $dataSoal = $this->db->get_where('soal',array(
+                        'ID' => $item['IDSoal']
+                    ))->result_array();
+
+                    $IDIndikator = $dataSoal[0]['IDIndikator'];
+
+                    // Select Soal 2
+                    $dataSoal2 = $this->db->get_where('soal',array(
+                        'IDIndikator' => $IDIndikator,
+                        'TypeSoal' => '2'
+                    ))->result_array();
+
+
                     $newAr = array(
                         'IDTest' => $IDTest,
                         'IDSoal' => $item['IDSoal']
                     );
+
+                    if(count($dataSoal2)>0){
+                        $newAr['IDSoal'] = $dataSoal2[0]['ID'];
+                    }
+
                     $this->db->insert('testing_details',$newAr);
                 }
 
@@ -508,9 +567,9 @@ class C_rest extends CI_Controller {
             $this->db->insert('pembahasan', $dataInsert);
             $insert_id = $this->db->insert_id();
 
-            return print_r(json_encode(array(
-                'insert_id' => $insert_id
-            )));
+            return print_r(json_encode(
+                array('insert_id' => $insert_id)
+            ));
 
         }
         else if($d['action']=='showPembahasan'){
@@ -536,7 +595,281 @@ class C_rest extends CI_Controller {
             }
 
         }
+        else if($d['action']=='seePembahasan'){
+
+            // Type pembahasan
+            $dataPembahasanType = $this->db->get('pembahasan_type')->result_array();
+
+            for($i=0;$i<count($dataPembahasanType);$i++){
+
+                $dataPembahasan = $this->db->query('SELECT p.* FROM pembahasan p 
+                                                        WHERE p.IDIndikator = "'.$d['IDIndikator'].'" 
+                                                        AND p.Type = "'.$dataPembahasanType[$i]['ID'].'" ')
+                    ->result_array();
+
+                $dataPembahasanType[$i]['Pembahasan'] = $dataPembahasan;
+            }
+
+
+
+            return print_r(json_encode($dataPembahasanType));
+
+        }
 
     }
+
+    public function crudMenuAdmin(){
+        $d = $this->getPost();
+
+        if($d['action']=='biodata'){
+            // Cek apakah sudah ada atau blm
+            $dataBio = $this->db->limit(1)->get('biodata')->result_array();
+
+            if(count($dataBio)>0){
+                $this->db->set('Biodata', $d['Biodata']);
+                $this->db->where('ID', $dataBio[0]['ID']);
+                $this->db->update('biodata');
+            } else {
+                $this->db->insert('biodata', array('Biodata'=>$d['Biodata']));
+            }
+
+            return print_r(1);
+        }
+        else if($d['action']=='readBiodata'){
+            $data = $this->db->limit(1)->get('biodata')->result_array();
+
+            return print_r(json_encode($data));
+        }
+        else if($d['action']=='loginAdmin'){
+            $Username = $d['Username'];
+            $Password = md5($d['Password']);
+
+            $check = $this->db->get_where('admin',array(
+                'Username' => $Username,
+                'Password' => $Password
+            ))->result_array();
+
+            if(count($check)>0){
+
+                // Set Sessions
+                $check[0]['LoginAdmin'] = true;
+                $this->session->set_userdata($check[0]);
+
+                $result = array(
+                    'Status' => 1
+                );
+            } else {
+                $result = array(
+                    'Status' => 0
+                );
+            }
+
+            return print_r(json_encode($result));
+
+        }
+        else if($d['action']=='setting'){
+            // Waktu
+            // Soal
+
+            $this->db->set('Nilai', $d['Soal']);
+            $this->db->where('ID', 1);
+            $this->db->update('setting');
+            $this->db->reset_query();
+
+            $this->db->set('Nilai', $d['Waktu']);
+            $this->db->where('ID', 2);
+            $this->db->update('setting');
+            $this->db->reset_query();
+
+            $this->db->set('Nilai', $d['Btn']);
+            $this->db->where('ID', 3);
+            $this->db->update('setting');
+            $this->db->reset_query();
+
+            return print_r(1);
+        }
+        else if($d['action']=='readSekolah'){
+
+            $data = $this->db->order_by('Name', 'ASC')
+                ->get('sekolah')->result_array();
+
+            return print_r(json_encode($data));
+
+        }
+        else if($d['action']=='showStudentBySekolah'){
+
+            $SekolahID = $d['SekolahID'];
+
+            $w_sekolah = ($SekolahID=='all') ? '' : ' AND u.Sekolah = "'.$SekolahID.'" ';
+            $dataScho = $this->db->query('SELECT u.*, s.Name AS Sekolah_Nama, s.Alamat AS Sekolah_Alamat FROM user u 
+                                                LEFT JOIN sekolah s ON (s.ID = u.Sekolah)
+                                                WHERE u.Sebagai = "siswa" '.$w_sekolah.' ORDER BY u.ID ASC ')
+                ->result_array();
+
+            return print_r(json_encode($dataScho));
+
+        }
+        else if($d['action']=='addDataSekolah'){
+
+            $dataInsert = (array) $d['dataInsert'];
+
+            $this->db->insert('sekolah',$dataInsert);
+
+            return print_r(1);
+
+        }
+        else if($d['action']=='delDataSekolah'){
+
+            $this->db->where('ID', $d['ID']);
+            $this->db->delete('sekolah');
+            $this->db->reset_query();
+
+            return print_r(1);
+
+        }
+
+    }
+
+    public function crudTimer(){
+
+        $d = $this->getPost();
+
+        if($d['action']=='updateTimer'){
+            // Cek apakah sudah ada IDnya
+            // jika ada maka update
+            // jika tidak maka insert
+
+            $IDTest = $d['IDTest'];
+            $Time = $d['Time'];
+
+            $dataTime = $this->db->get_where('timer',array(
+                'IDTest' => $IDTest
+            ))->result_array();
+
+            if(count($dataTime)>0){
+                // Update
+
+                $arrUpdt = array(
+                    'Time' => $Time
+                );
+
+                if($Time=='00:00:00'){
+                    $arrUpdt['Status'] = '1';
+                }
+
+                $this->db->where('IDTest', $IDTest);
+                $this->db->update('timer',$arrUpdt);
+
+            } else {
+                // Insert
+                $dataIns = array(
+                    'IDTest' => $IDTest,
+                    'Time' => $Time
+                );
+                $this->db->insert('timer',$dataIns);
+            }
+        } else if ($d['action']=='getTimerNow') {
+
+            $data = $this->db->get_where('timer',array(
+                'IDTest' => $d['IDTest']
+            ))->result_array();
+
+            $tm = ($data[0]['Status']=='0' || $data[0]['Status']==0)
+                ? $data[0]['Time'] : '00:00:00';
+            $result = array('EndSessions'=>$tm);
+
+            return print_r(json_encode($result));
+
+        }
+
+
+
+    }
+
+    public function getAnalisis2($IDSekolah){
+
+        $data = $this->db->query('SELECT * FROM user u 
+                                            WHERE u.Sebagai = "siswa" AND u.Sekolah = "'.$IDSekolah.'" ')->result_array();
+
+        if(count($data)>0){
+            for($i=0;$i<count($data);$i++){
+                $d = $data[$i];
+
+                // Cek berapa kali tes
+                $dataTest = $this->db->query('SELECT * FROM  testing t
+                                                        WHERE t.IDUser = "'.$d['ID'].'" AND t.Status = "1" ')->result_array();
+
+                if(count($dataTest)>0){
+                    for ($t=0;$t<count($dataTest);$t++){
+                        $dataTest[$t]['Detail'] = $this->db->query('SELECT * FROM testing_details td 
+                                                                            WHERE td.IDTest = "'.$dataTest[$t]['ID'].'" ')
+                                                                ->result_array();
+                    }
+                }
+
+                $data[$i]['Test'] = $dataTest;
+
+
+            }
+        }
+
+        return print_r(json_encode($data));
+
+    }
+
+    public function getAnalisis3($IDSoal){
+
+        // Get All soal
+//        $dataSoal = $this->db->select('IDKategori')->get_where('testing_details',array(
+//            'IDSoal' => $IDSoal
+//        ))->result_array();
+
+        $dataSoal = $this->db->query('SELECT td.IDKategori FROM testing_details td 
+                                                LEFT JOIN testing t ON (t.ID = td.IDTest)
+                                                WHERE td.IDSoal = "'.$IDSoal.'" AND t.Status = "1" ')->result_array();
+
+        // ID kategori : 1 = Paham, 2 = Tidak Paham, 3 = Miskonsepsi
+        $result = array(
+            'P' => 0,
+            'TP' => 0,
+            'M' => 0
+        );
+
+        if(count($dataSoal)>0){
+            $totalP = count($dataSoal);
+            $T_P = 0;
+            $T_TP = 0;
+            $T_M = 0;
+            foreach ($dataSoal AS $item){
+
+                if($item['IDKategori']=='1' || $item['IDKategori']==1){
+                    $T_P = $T_P+1;
+                } else if($item['IDKategori']=='2' || $item['IDKategori']==2){
+                    $T_TP = $T_TP+1;
+                } else if($item['IDKategori']=='3' || $item['IDKategori']==3){
+                    $T_M = $T_M+1;
+                } else {
+                    // Tidak menjawab maka di hitung tidak paham
+                    $T_TP = $T_TP+1;
+                }
+            }
+
+            // Hitung persentase
+            $P = ($T_P>0)? ($T_P/$totalP) * 100 : 0;
+            $TP = ($T_TP>0)? ($T_TP/$totalP) * 100 : 0;
+            $M = ($T_M>0)? ($T_M/$totalP) * 100 : 0;
+
+            $result = array(
+                'P' => round($P,2),
+                'TP' => round($TP,2),
+                'M' => round($M,2)
+            );
+
+        }
+
+        return print_r(json_encode($result));
+
+    }
+
 
 }

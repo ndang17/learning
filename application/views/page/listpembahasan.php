@@ -7,7 +7,9 @@
         <div class="col-md-12">
             <a href="http://localhost:8080/learning/guru/list-soal" class="btn btn-warning"><i class="fa fa-arrow-circle-left margin-right"></i> Kembali ke halaman Guru</a>
 
-            <div style="margin-top: 15px;background: lightyellow;border: 1px solid orangered;min-height: 50px;"></div>
+            <div style="margin-top: 15px;background: lightyellow;
+            border: 1px solid orangered;min-height: 50px;padding: 15px;"><h3 style="margin-top: 10px;"><?= $dataIndikator[0]['Indikator']; ?></h3></div>
+
         </div>
     </div>
 
@@ -35,7 +37,7 @@
 
         <div class="col-md-6" style="border-left: 1px solid #CCCCCC;">
             <h3>List Pembahasan</h3>
-            <table class="table">
+            <table class="table table-striped">
 
                 <thead>
                 <tr>
@@ -80,7 +82,7 @@
                     detail = '<div style="overflow: auto;max-height: 100px;">'+v.Penjelasan+'</div>';
                 } else if(v.Type==2 || v.Type=='2'){
                     tipe = 'PDF';
-                    detail = '<a>'+v.File+'</a>';
+                    detail = '<b>'+v.FileDesc+'</b><br/><a class="btn btn-sm btn-default" href="'+base_url_js+'uploads/pembahasan/'+v.File+'" target="_blank">Download File</a>';
                 }
 
                 $('#listPembahasan').append('<tr>' +
@@ -111,10 +113,15 @@
         }
         else if(Type==2 || Type=='2'){
             $('#viewForm').html('' +
+                '<div class="form-group">' +
+                '<label>Keterangan</label>' +
+                '<input type="text" class="form-control" id="form_file_desc" />' +
+                '</div>' +
                 '<form id="formFile" enctype="multipart/form-data" accept-charset="utf-8" method="post" action="">' +
                 '<div class="form-group">' +
                 '<label>Pilih file (.pdf)</label>' +
-                '<label class="btn btn-default btn-default-warning btn-block">   Browse ( pdf ) … <input type="file" id="form_File" name="userfile" style="display: none;" accept="application/pdf"></label>' +
+                '<label class="btn btn-default btn-default-warning btn-block">   Browse ( pdf )' +
+                '<input type="file" id="form_File" name="userfile" style="display: none;" accept="application/pdf"></label>' +
                 '<p class="help-block">Maximum : 5Mb</p>' +
                 '<div id="viewFile"></div>' +
                 '</div>' +
@@ -143,6 +150,11 @@
         var Penjelasan = $('#Penjelasan').val();
         var Link = $('#Link').val();
 
+        var form_file_desc = $('#form_file_desc').val();
+        var FileDesc = (form_file_desc!='' && form_file_desc!=null
+            && form_file_desc!== 'undefined')
+            ? form_file_desc : '';
+
         var File = '';
 
         var data = {
@@ -152,6 +164,7 @@
                 Type : Type,
                 Penjelasan : Penjelasan,
                 File : File,
+                FileDesc : FileDesc,
                 Link : Link
             }
         };
@@ -159,11 +172,11 @@
         var url = base_url_js+'__crudPembahasan';
         
         $.post(url,{formData : data},function (jsonResult) {
-            toastr.success('Pembahasan ditambahkan','Sukses');
+
            if(Type==2 || Type=='2'){
-               console.log(jsonResult);
-               console.log('Lakukan Upload');
+               uploadFile(jsonResult.insert_id);
            } else {
+               toastr.success('Pembahasan ditambahkan','Sukses');
                setTimeout(function () {
                    window.location.href=''
                },500);
@@ -208,20 +221,32 @@
         readURL(this);
     });
 
+    function readURL(input) {
 
-    function uploadIjazah(id,Type,Name) {
+        $('#UpdateEditFile').val(1);
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
-        var TypeFiles = ($('#TypeFiles').val()!=''
-            && $('#TypeFiles').val()!=null)
-            ? $('#TypeFiles').val() : '';
+            console.log(input.files[0]);
+
+            reader.onload = function(e) {
+                // console.log(e.target.result);
+                $('#viewFile').html('<div><b>Nama File : '+input.files[0].name+'</b><br/><b>Size : '+input.files[0].size+'</b></div>');
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+
+    function uploadFile(InsertID) {
+
 
         var formData = new FormData( $("#formFile")[0]);
 
-        console.log(Type);
+        var name = moment().unix()+'.pdf';
 
-        var name = Name+'_'+TypeFiles+'_'+sessionNIP+'_'+moment().unix()+'.pdf';
-
-        var url = base_url_js_server_ws+'human-resources/employees/upload_files2?name='+name+'&id='+id;
+        var url = base_url_js+'upload_files?name='+name+'&id='+InsertID;
 
         $.ajax({
             url : url,  // Controller URL
@@ -232,26 +257,18 @@
             contentType : false,
             processData : false,
             success : function(data) {
-                // toastr.success(TypeFiles+' Uploaded','Success');
-                alert(data);
 
-                loadDocument();
+                console.log(data);
+                if(data.Status ==0 || data.Status =='0'){
+                    alert(data);
+                    toastr.error(data.error,'Error');
+                } else {
+                    toastr.success('Pembahasan ditambahkan','Sukses');
+                }
+                window.location.href = '';
             }
         });
     }
 
 
-    function readURL(input) {
-
-        $('#UpdateEditFile').val(1);
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-                $('#viewFile').html('<iframe src="'+e.target.result+'" height="150" style="width: 100%;"></iframe>');
-            };
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
 </script>

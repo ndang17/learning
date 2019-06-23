@@ -72,7 +72,62 @@
     
     $(document).ready(function () {
         loadSoal();
+        // Get Timer
+
     });
+
+    function loadTimer() {
+        var url = base_url_js+'__crudTimer';
+        var data = {
+            action : 'getTimerNow',
+            IDTest : '<?=$IDTest;?>'
+        };
+
+        $.post(url,{formData:data},function (jsonResult) {
+
+            var EndSessions = jsonResult.EndSessions;
+
+            var EndSessions_split = EndSessions.split(':');
+            var End_countdown = moment()
+                .add(EndSessions_split[0], 'hours')
+                .add(EndSessions_split[1], 'minutes')
+                .add(EndSessions_split[2], 'seconds');
+
+            var Start_countdown = moment().unix();
+            var different = End_countdown.diff(Start_countdown);
+
+            var mikro = Start_countdown + different;
+
+            $('#timer').countdown(mikro, function(event) {
+
+                $(this).html(event.strftime('<span>%H:%M:%S</span>'));
+                saveTime(event.strftime('%H:%M:%S'));
+                if (event.elapsed) {
+                    // console.log('stop');
+                    window.location.replace(base_url_js+'hasil/<?=$IDTest;?>');
+                }
+
+            });
+
+        });
+    }
+
+    function saveTime(time){
+
+        var url = base_url_js+'__crudTimer';
+
+        var data = {
+            action : 'updateTimer',
+            IDTest : '<?=$IDTest;?>',
+            Time : time
+        };
+
+        $.post(url,{formData:data},function (jsonResult) {
+
+        });
+
+
+    }
     
     function loadSoal() {
         var url = base_url_js+'__crudSoal';
@@ -219,11 +274,13 @@
                     '        </div>' +
                     '        <div class="col-md-2" style="text-align: center;">' +
                     '            <div class="well">' +
-                    '                <h3 style="margin-top: 0px;margin-bottom: 0px;">00:80:00</h3>' +
+                    '                <h3 style="margin-top: 0px;margin-bottom: 0px;" id="timer"></h3>' +
                     '            </div>' +
                     '' +
                     '        </div>' +
                     '    </div>');
+
+                loadTimer();
 
                 $('.rate-jawaban').removeClass('btn-success');
                 $('.rate-jawaban').addClass('btn-default');

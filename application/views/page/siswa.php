@@ -10,7 +10,7 @@
         font-size: 15px;
     }
     .tb-blm-selesai {
-        background: lightyellow;
+        background: #f5f5f5;
     }
     .tb-selesai {
 
@@ -60,7 +60,7 @@
                             <li>Boleh menggunakan sisa waktu ujian untuk mengoreksi jawaban sebelum jawaban dikirim</li>
                         </ol>
                     </div>
-                    <div class="well" style="padding: 15px;text-align: center;">
+                    <div class="well" id="viewMulaiBtn" style="padding: 15px;text-align: center;">
                         <button class="btn btn-success" id="btnMulai"><b>Mulai</b> E-Diagnostic Test</button>
                     </div>
                     <hr/>
@@ -87,6 +87,7 @@
 
         $.post(url,{formData:data},function (jsonResult) {
             loadingPage('#listTesting');
+            console.log(jsonResult);
             if(jsonResult.length>0){
                 $('#listTesting').html('');
                 $.each(jsonResult,function (i,v) {
@@ -97,8 +98,12 @@
 
                     if(Details.length>0){
                         $.each(Details,function (i2,v2) {
-                            var btnAct2 = (v2.Status==1 || v2.Status=='1') ? '<div class="col-md-4"><a href="'+base_url_js+'hasil/'+v2.ID+'" class="btn btn-primary btn-block btn-sm btn-act-test">Lihat hasil tes</a></div>'
-                                : '<div class="col-md-4"><a href="'+base_url_js+'soal/'+v2.ID+'" class="btn btn-warning btn-block btn-sm btn-act-test">Lanjut mengerjakan</a></div>';
+
+                            var timer = (v2.Time != null) ? v2.Time : '00:00:00';
+
+                            var btnAct2 = (v2.Status==1 || v2.Status=='1')
+                                ? '<div class="col-md-4"><a href="'+base_url_js+'hasil/'+v2.ID+'" class="btn btn-primary btn-block btn-sm btn-act-test">Lihat hasil tes '+(i2 + 1)+' (Skor : '+v2.Score+')</a></div>'
+                                : '<div class="col-md-4"><a href="'+base_url_js+'soal/'+v2.ID+'" class="btn btn-warning btn-block btn-sm btn-act-test">Lanjutkan ( '+timer+' )</a></div>';
 
                             btnAct = btnAct+''+btnAct2;
 
@@ -116,6 +121,7 @@
                         '                       </div>' +
                         '                    </div>');
                 });
+                $('#viewMulaiBtn').remove();
             }
             else {
                 $('#listTesting').html('<div style="text-align:center;"><h4 style="color: #CCCCCC;">Tidak ada riwayat ujian</h4></div>');

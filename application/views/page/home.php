@@ -47,7 +47,7 @@
 
 <div class="container" id="main" style="margin-top: 50px;">
     <div class="row">
-        <div class="col-md-3 col-md-offset-3">
+        <div class="col-md-3">
             <a href="javascript:void(0);" id="btnSiswa">
                 <div class="thumbnail">
                     <img src="<?php echo base_url('images/icon/siswa.png'); ?>" style="width: 100%;max-width: 100px;">
@@ -64,16 +64,26 @@
                 </div>
             </a>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3" style="text-align: center;">
-            <hr/>
-            <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
-            </p>
+        <div class="col-md-3">
+            <a href="javascript:void(0);" id="btnBiodata">
+                <div class="thumbnail">
+                    <img src="<?php echo base_url('images/icon/info.png'); ?>" style="width: 100%;max-width: 100px;">
+                    <h3>Biodata</h3>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a href="javascript:void(0);" id="btnAdmin">
+                <div class="thumbnail">
+                    <img src="<?php echo base_url('images/icon/admin.png'); ?>" style="width: 100%;max-width: 100px;">
+                    <h3>Admin</h3>
+                </div>
+            </a>
         </div>
     </div>
+
 </div>
 
 
@@ -81,13 +91,104 @@
 
 <script>
 
-
-
     $('#btnSiswa').click(function () {
         loadModalUser('siswa');
     });
     $('#btnGuru').click(function () {
         loadModalUser('guru');
+    });
+
+    $('#btnBiodata').click(function () {
+
+        var url = base_url_js+'__crudMenuAdmin';
+
+        var formData = {
+            action : 'readBiodata'
+        };
+
+        $.post(url,{formData:formData},function (jsonResult) {
+            $('#myModal .modal-dialog').removeClass('modal-sm modal-lg');
+            // $('#myModal .modal-dialog').addClass('modal-lg');
+
+            $('#myModal .modal-header').removeClass('hide');
+            $('#myModal .modal-footer').removeClass('hide');
+            $('#myModal .modal-header .modal-title').html('Biodata');
+
+            var bd = (jsonResult.length>0) ? jsonResult[0].Biodata : 'Belum ada biodata';
+            $('#myModal .modal-body').html(bd);
+
+            $('#myModal').modal('show');
+
+            // $('#myModal .modal-footer').addClass('hide');
+        });
+
+    });
+
+    $('#btnAdmin').click(function () {
+        $('#myModal .modal-dialog').removeClass('modal-sm modal-lg');
+        $('#myModal .modal-dialog').addClass('modal-sm');
+
+
+        $('#myModal .modal-header').addClass('hide');
+        $('#myModal .modal-footer').addClass('hide');
+
+        $('#myModal .modal-body').html('<h3>Login Admin</h3><table class="table">' +
+            '    <tr>' +
+            '        <td style="width: 20%;">Username</td>' +
+            '        <td style="width: 1%;">:</td>' +
+            '        <td>' +
+            '            <input class="form-control" id="formAdminUsername">' +
+            '        </td>' +
+            '    </tr>' +
+            '    <tr>' +
+            '        <td>Password</td>' +
+            '        <td>:</td>' +
+            '        <td>' +
+            '            <input type="password" class="form-control" id="formAdminPassword">' +
+            '        </td>' +
+            '    </tr>' +
+            '    <tr>' +
+            '        <td colspan="3" style="text-align: right;">' +
+            '            <button class="btn btn-sm btn-default" data-dismiss="modal">Tutup</button> | ' +
+            '            <button class="btn btn-sm btn-primary" id="btnAdminLogin">Masuk</button>' +
+            '        </td>' +
+            '    </tr>' +
+            '</table>');
+
+
+        $('#myModal').modal('show');
+
+        $('#btnAdminLogin').click(function () {
+            var formAdminUsername = $('#formAdminUsername').val();
+            var formAdminPassword = $('#formAdminPassword').val();
+
+            if(formAdminUsername !='' && formAdminUsername!=null &&
+                formAdminPassword !='' && formAdminPassword!=null){
+
+                var url = base_url_js+'__crudMenuAdmin';
+
+                var formData = {
+                    action : 'loginAdmin',
+                    Username : formAdminUsername,
+                    Password : formAdminPassword
+                };
+
+                $.post(url,{formData:formData},function (jsonResult) {
+
+                    console.log(jsonResult);
+                    if(jsonResult.Status==0 || jsonResult.Status=='0'){
+                        alert('Username & Password tidak cocok');
+                    } else {
+                        window.location.replace(base_url_js+'admin/biodata');
+                    }
+
+                });
+
+            } else {
+                alert('Username & Password harus diisi');
+            }
+        });
+
     });
 
 
@@ -147,52 +248,75 @@
 
     $(document).on('click','#RegistrasiAct',function () {
 
+        loadingPage('#mainModal');
+        // Get sekolah
+
         var user = $(this).attr('data-usr');
 
-        var formNIS = (user=='siswa') ? '' : 'hide';
+        var url = base_url_js+'__crudMenuAdmin';
 
-        loadingPage('#mainModal');
-        setTimeout(function () {
-            $('#mainModal').html('<div class="row">' +
-                '    <div class="col-md-12">' +
-                '        <div class="form-group">' +
-                '            <label>Nama Lengkap</label>' +
-                '            <input class="form-control" autofocus placeholder="Nama Lengkap" id="f_Nama">' +
-                '            <input class="hide" value="'+user.toLowerCase()+'" id="f_Sebagai">' +
-                '        </div>' +
-                '        <div class="form-group '+formNIS+'">' +
-                '            <label>NIS</label>' +
-                '            <input class="form-control" placeholder="Nomor Induk Siswa" id="f_NIS">' +
-                '        </div>' +
-                '        <div class="form-group '+formNIS+'">' +
-                '            <label>Kelas</label>' +
-                '            <input class="form-control" placeholder="Kelas" type="number" id="f_Kelas">' +
-                '        </div>' +
-                '        <div class="form-group '+formNIS+'">' +
-                '            <label>Nama Sekolah</label>' +
-                '            <input class="form-control" placeholder="Nama Sekolah" type="text" id="f_Sekolah">' +
-                '        </div>' +
-                '        <div class="form-group">' +
-                '            <label>Nama Pengguna (Username)</label>' +
-                '            <input class="form-control" placeholder="Nama Pengguna" id="f_Username">' +
-                '            <p class="help-block">Tidak boleh menggunakan spasi</p>' +
-                '        </div>' +
-                '        <div class="form-group">' +
-                '            <label>E-mail</label>' +
-                '            <input class="form-control" placeholder="E-mail" id="f_Email">' +
-                '        </div>' +
-                '        <div class="form-group">' +
-                '            <label>Password</label>' +
-                '            <input class="form-control" placeholder="Password" id="f_Password">' +
-                '        </div>' +
-                '        <div style="text-align: right;">' +
-                '            <button class="btn btn-default" data-usr="'+user+'" id="loginAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Masuk</button>' +
-                '            <button class="btn btn-default" data-dismiss="modal">Tutup</button>' +
-                '            <button class="btn btn-success" id="btnInModalDaftar">Daftar</button>' +
-                '        </div>' +
-                '    </div>' +
-                '</div>');
-        },500);
+        var formData = {
+            action : 'readSekolah'
+        };
+
+        $.post(url,{formData:formData},function (jsonResult) {
+
+
+            var sekolah = '';
+            if(jsonResult.length>0){
+                $.each(jsonResult,function (i,v) {
+                   sekolah = sekolah + '<option value="'+v.ID+'">'+v.Name+'</option>';
+                });
+            }
+
+
+            var formNIS = (user=='siswa') ? '' : 'hide';
+            setTimeout(function () {
+                $('#mainModal').html('<div class="row">' +
+                    '    <div class="col-md-12">' +
+                    '        <div class="form-group">' +
+                    '            <label>Nama Lengkap</label>' +
+                    '            <input class="form-control" autofocus placeholder="Nama Lengkap" id="f_Nama">' +
+                    '            <input class="hide" value="'+user.toLowerCase()+'" id="f_Sebagai">' +
+                    '        </div>' +
+                    '        <div class="form-group '+formNIS+'">' +
+                    '            <label>NIS</label>' +
+                    '            <input class="form-control" placeholder="Nomor Induk Siswa" id="f_NIS">' +
+                    '        </div>' +
+                    '        <div class="form-group '+formNIS+'">' +
+                    '            <label>Kelas</label>' +
+                    '            <input class="form-control" placeholder="Kelas" type="number" id="f_Kelas">' +
+                    '        </div>' +
+                    '        <div class="form-group '+formNIS+'">' +
+                    '            <label>Nama Sekolah</label>' +
+                    '            <select class="form-control" id="f_Sekolah">'+sekolah+'</select>' +
+                    // '            <input class="form-control" placeholder="Nama Sekolah" type="text" id="f_Sekolah">' +
+                    '        </div>' +
+                    '        <div class="form-group">' +
+                    '            <label>Nama Pengguna (Username)</label>' +
+                    '            <input class="form-control" placeholder="Nama Pengguna" id="f_Username">' +
+                    '            <p class="help-block">Tidak boleh menggunakan spasi</p>' +
+                    '        </div>' +
+                    '        <div class="form-group">' +
+                    '            <label>E-mail</label>' +
+                    '            <input class="form-control" placeholder="E-mail" id="f_Email">' +
+                    '        </div>' +
+                    '        <div class="form-group">' +
+                    '            <label>Password</label>' +
+                    '            <input class="form-control" placeholder="Password" id="f_Password">' +
+                    '        </div>' +
+                    '        <div style="text-align: right;">' +
+                    '            <button class="btn btn-default" data-usr="'+user+'" id="loginAct" style="float: left;"><i class="fa fa-chevron-left margin-right"></i> Masuk</button>' +
+                    '            <button class="btn btn-default" data-dismiss="modal">Tutup</button>' +
+                    '            <button class="btn btn-success" id="btnInModalDaftar">Daftar</button>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>');
+            },500);
+
+        });
+
+
         
     });
 
