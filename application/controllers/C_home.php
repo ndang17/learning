@@ -305,49 +305,7 @@ class C_home extends MY_Controller {
 
     public function analisis_4(){
 
-        $data['dataSoal'] = $this->db->select('ID,Soal')->get('soal')->result_array();
-        $data['totalSoal'] = count($data['dataSoal']);
-
-        $totalSiswa =0;
-
-        // Menghitung Detail Testing
-        if(count($data['dataSoal'])>0){
-            for ($i=0;$i<count($data['dataSoal']);$i++){
-
-                $d = $data['dataSoal'][$i];
-                $dataDetails = $this->db->query('SELECT td.IDKategori FROM testing_details td 
-                                                        LEFT JOIN testing t ON (t.ID = td.IDTest)
-                                                        WHERE td.IDSoal = "'.$d['ID'].'" 
-                                                        AND t.Status = "1" ')
-                    ->result_array();
-
-                $P = 0;$TP = 0;$M = 0;
-
-                if(count($dataDetails)>0){
-                    foreach ($dataDetails AS $item){
-                        if($item['IDKategori']==1 || $item['IDKategori']=='1'){
-                            $P = $P + 1;
-                        } else if($item['IDKategori']==2 || $item['IDKategori']=='2'){
-                            $TP = $TP + 1;
-                        } else if($item['IDKategori']==3 || $item['IDKategori']=='3'){
-                            $M = $M + 1;
-                        } else {
-                            $TP = $TP + 1;
-                        }
-                    }
-                }
-
-                $data['dataSoal'][$i]['A_P'] = $P;
-                $data['dataSoal'][$i]['A_TP'] = $TP;
-                $data['dataSoal'][$i]['A_M'] = $M;
-                if($i==0){
-                    $totalSiswa = $P + $TP + $M;
-                }
-            }
-        }
-
-        $data['totalSiswa'] = $totalSiswa;
-        $data['Jumlah_keseluruhan'] = $data['totalSoal'] * $totalSiswa;
+        $data['dataSoal'] = '';
 
         $page = $this->load->view('page/guru_analisis_4',$data,true);
         $this->menu_guru($page);

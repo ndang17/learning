@@ -48,5 +48,6 @@ $route['__selectOption'] = 'c_rest/selectOption';
 
 $route['__getAnalisis2/(:num)'] = 'c_rest/getAnalisis2/$1';
 $route['__getAnalisis3/(:num)'] = 'c_rest/getAnalisis3/$1';
+$route['__getAnalisis4'] = 'c_rest/getAnalisis4';
 
 

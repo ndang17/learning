@@ -38,6 +38,10 @@ class C_rest extends CI_Controller {
 
             return print_r(json_encode($data));
         }
+        else if($d['action']=='SO_gelombang'){
+            $data = $this->db->order_by('ID','ASC')->get('setting_gelombang')->result_array();
+            return print_r(json_encode($data));
+        }
     }
 
     public function crudUser(){
@@ -240,12 +244,11 @@ class C_rest extends CI_Controller {
 
 
             // Get Setting
-            $setting = $this->db->get_where('setting',array('IDST'=>1))->result_array();
+            $setting = $this->db->get_where('setting_gelombang',array('Status'=>'1'))->result_array();
 
             $jumlahSoal = $setting[0]['Nilai'];
 
             // Random Soal
-//            $dataSoal = $this->db->query('SELECT ID FROM soal ORDER BY RAND() LIMIT '.$jumlahSoal)->result_array();
             $dataSoal = $this->db->query('SELECT ID FROM soal WHERE TypeSoal = "1" ORDER BY IDIndikator ASC LIMIT '.$jumlahSoal)->result_array();
 
             // Insert Ke tabel testing details
@@ -727,6 +730,22 @@ class C_rest extends CI_Controller {
             return print_r(1);
 
         }
+        else if($d['action']=='gelombangRead'){
+            $data = $this->db->get('setting_gelombang')->result_array();
+            return print_r(json_encode($data));
+        }
+        else if($d['action']=='gelombangUpdate'){
+            $formD = (array) $d['formD'];
+            $this->db->where('ID', $d['ID']);
+            $this->db->update('setting_gelombang',$formD);
+
+            return print_r(1);
+        }
+        else if($d['action']=='gelombangInsert'){
+            $formD = (array) $d['formD'];
+            $this->db->insert('setting_gelombang',$formD);
+            return print_r(1);
+        }
 
     }
 
@@ -868,6 +887,92 @@ class C_rest extends CI_Controller {
         }
 
         return print_r(json_encode($result));
+
+    }
+
+    public function getAnalisis4(){
+
+        $sch = $this->input->get('sch');
+        $g = $this->input->get('g');
+
+        // Get total student
+        $where = '';
+        if($sch!='-'){
+            $where = ' AND Sekolah = "'.$sch.'" ';
+        }
+
+        // Jumlah soal
+        $q = 'SELECT t.ID FROM testing t  LEFT JOIN user u ON (u.ID = t.IDUser) WHERE u.Sebagai = "siswa" AND t.Status="1" AND t.Type = "1"  AND t.IDGelombang = "'.$g.'" '.$where;
+
+        $dataSoal = $this->db->query('SELECT t.* FROM testing t 
+                                            LEFT JOIN user u ON (u.ID = t.IDUser)
+                                            WHERE u.Sebagai = "siswa" AND t.Status="1" 
+                                            AND t.Type = "1" AND t.IDGelombang = "'.$g.'" '.$where)->result_array();
+
+        $JumlahSiswa = count($dataSoal);
+        $JumlahSoal = 0;
+
+        // Query Detail
+        $result = [];
+        // MEnadaptkan jumlah soal
+        if($JumlahSiswa>0){
+
+
+            $IDGelombang = $dataSoal[0]['IDGelombang'];
+            $dataJumlahSoal = $this->db->get_where('setting_gelombang',array(
+                'ID' => $IDGelombang
+            ))->result_array();
+
+            $JumlahSoal = $dataJumlahSoal[0]['Nilai'];
+
+            // Get sample ID Soal
+            $dataIDSoal = $this->db->query('SELECT IDSoal FROM testing_details 
+                                                            WHERE IDTest = "'.$dataSoal[0]['ID'].'"')
+                ->result_array();
+
+
+            if(count($dataIDSoal)>0){
+
+                foreach ($dataIDSoal AS $item){
+                    $IDSoal = $item['IDSoal'];
+                    $q_p = 'SELECT td.* FROM testing_details td WHERE td.IDTest IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND td.IDKategori = "1" ';
+                    $data_p = $this->db->query($q_p)->result_array();
+
+                    $q_tp = 'SELECT td.* FROM testing_details td WHERE td.IDTest IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND (td.IDKategori = "2" OR IDKombinasi IS NULL OR td.IDKombinasi = "")';
+                    $data_tp = $this->db->query($q_tp)->result_array();
+
+                    $q_m = 'SELECT td.* FROM testing_details td WHERE td.IDTest IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND td.IDKategori = "3"';
+                    $data_m = $this->db->query($q_m)->result_array();
+
+                    $res = array(
+                        'IDSoal' => $IDSoal,
+                        'q_p' => $q_p,
+                        'q_tp' => $q_tp,
+                        'q_m' => $q_m,
+                        'P' => count($data_p),
+                        'TP' => count($data_tp),
+                        'M' => count($data_m)
+                    );
+
+                    array_push($result,$res);
+                }
+
+            }
+
+
+        }
+
+        // Jumlah Keseluruhan
+        $JumlahKeseluruhan = $JumlahSiswa * $JumlahSoal;
+
+        $r = array(
+            '_JumlahSiswa' => $JumlahSiswa,
+            '_JumlahSoal' => $JumlahSoal,
+            'JumlahKeseluruhan' => $JumlahKeseluruhan,
+            'Details' => $result
+        );
+
+        return print_r(json_encode($r));
 
     }
 

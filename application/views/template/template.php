@@ -78,7 +78,26 @@
                }
             });
 
+        }
 
+        function loadSelectOption_gelombang(elm,selected='') {
+            var url = base_url_js+'__selectOption';
+
+            var data = {
+                action : 'SO_gelombang'
+            };
+
+            $.post(url,{formData : data},function (jsonResult) {
+                console.log(jsonResult);
+                if(jsonResult.length>0){
+
+                    $.each(jsonResult,function (i,v) {
+
+                        $(elm).append('<option value="'+v.ID+'">'+v.Nama+'</option>');
+                    })
+
+                }
+            });
         }
 
         function loadingButton(elm) {
