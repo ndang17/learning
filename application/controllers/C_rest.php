@@ -746,6 +746,19 @@ class C_rest extends CI_Controller {
             $this->db->insert('setting_gelombang',$formD);
             return print_r(1);
         }
+        else if($d['action']=='updateNewPassword'){
+            $ID = $d['ID'];
+            $Password = md5($d['Password']);
+
+            $this->db->set('Password', $Password);
+            $this->db->where('ID', $ID);
+            $this->db->update('user');
+
+            return print_r(1);
+
+
+
+        }
 
     }
 

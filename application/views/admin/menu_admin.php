@@ -31,7 +31,7 @@
 			  <a href="<?= base_url('admin/murid'); ?>" class="list-group-item <?php if($menuAct=='murid'){ echo "active";} ?>"><i class="fa fa-users"></i> Murid</a>
 			</div>
 
-            <button class="btn btn-block btn-danger">Log Out</button>
+            <a href="<?= base_url('admin/logout'); ?>" class="btn btn-block btn-danger">Log Out</a>
 
 		</div>
 		<div class="col-md-9">

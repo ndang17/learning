@@ -34,6 +34,7 @@ $route['admin/pengaturan'] = 'c_admin/pengaturan';
 $route['admin/master-sekolah'] = 'c_admin/mastersekolah';
 $route['admin/guru'] = 'c_admin/guru';
 $route['admin/murid'] = 'c_admin/murid';
+$route['admin/logout'] = 'c_admin/logout';
 
 
 $route['__crudUser'] = 'c_rest/crudUser';

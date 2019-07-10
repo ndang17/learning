@@ -3,15 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class C_admin extends MY_Controller {
 
-//    function __construct()
-//    {
-//        if($this->session->userdata('')){
-//
-//        } else {
-//            redirect(base_url());
-//        }
-//    }
-
 
     public function index()
     {
@@ -19,11 +10,22 @@ class C_admin extends MY_Controller {
         parent::template($content);
     }
 
+    public function logout(){
+        $this->session->sess_destroy();
+        redirect(base_url());
+    }
+
     public function menu_admin($page)
     {
-        $data['page']=$page;
-        $content = $this->load->view('admin/menu_admin',$data,true);
-        parent::template($content);
+        if($this->session->userdata('LoginAdmin')==1 || $this->session->userdata('LoginAdmin')=='1'){
+            $data['page']=$page;
+            $content = $this->load->view('admin/menu_admin',$data,true);
+            parent::template($content);
+        } else {
+            redirect(base_url());
+        }
+
+
     }
 
     public function biodata(){
@@ -49,13 +51,19 @@ class C_admin extends MY_Controller {
 
     public function guru(){
 
-        $page = $this->load->view('admin/guru','',true);
+        $data['dataGuru'] = $this->db->get_where('user',array(
+            'Sebagai' => 'guru'
+        ))->result_array();
+        $page = $this->load->view('admin/guru',$data,true);
         $this->menu_admin($page);
     }
 
     public function murid(){
 
-        $page = $this->load->view('admin/murid','',true);
+        $data['dataMurid'] = $this->db->get_where('user',array(
+            'Sebagai' => 'siswa'
+        ))->result_array();
+        $page = $this->load->view('admin/murid',$data,true);
         $this->menu_admin($page);
     }
 
