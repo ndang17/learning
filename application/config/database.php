@@ -8,9 +8,15 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
+
 	'username' => 'root',
 	'password' => '',
 	'database' => 'learning',
+
+//    'username' => 'ediw2554_nandang',
+//    'password' => 'nandang123',
+//    'database' => 'ediw2554_learning',
+
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

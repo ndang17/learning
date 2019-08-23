@@ -23,7 +23,7 @@
                     <td><?= $item['Username'].'<br/>'.$item['Email']; ?></td>
                     <td>
                         <button class="btn btn-sm btn-default btnReset" data-id="<?= $item['ID']; ?>"><i class="fa fa-refresh"></i></button>
-<!--                        <button class="btn btn-sm btn-danger btnDelete" data-id="--><?//= $item['ID']; ?><!--"><i class="fa fa-trash"></i></button>-->
+                        <button class="btn btn-sm btn-danger btnDelete" data-id="<?= $item['ID']; ?>"><i class="fa fa-trash"></i></button>
                     </td>
                 </tr>
             <?php } ?>
@@ -82,9 +82,23 @@
 
     $(document).on('click','.btnDelete',function () {
 
-        if(confirm('Menghapus guru, akan mengha'))
+        if(confirm('Menghapus guru, akan menghapus semua soal yang pernah dibuat dan yang pernah dikerjakan siswa')){
+            var ID = $(this).attr('data-id');
+            var formData = {
+                action : 'removeGuru',
+                ID : ID
+            };
 
-        var ID = $(this).attr('data-id');
+            var url = base_url_js+'__crudMenuAdmin';
+
+            $.post(url,{formData:formData},function (result) {
+                toastr.success('Guru terhapus','Sukses');
+                setTimeout(function () {
+                    window.location.href='';
+                },500);
+            });
+        }
+
 
     });
 

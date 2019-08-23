@@ -759,6 +759,66 @@ class C_rest extends CI_Controller {
 
 
         }
+        else if($d['action']=='removeStudent'){
+
+            $ID = $d['ID'];
+
+            //Get User ID
+            $dataTest = $this->db->get_where('testing',array(
+                'IDUser' => $ID
+            ))->result_array();
+
+            if(count($dataTest)>0){
+                foreach ($dataTest AS $item){
+                    $this->db->where('IDTest', $item['ID']);
+                    $this->db->delete('testing_details');
+                    $this->db->reset_query();
+
+                }
+
+
+                $this->db->where('IDUser', $ID);
+                $this->db->delete('testing');
+                $this->db->reset_query();
+            }
+
+            $this->db->where('ID', $ID);
+            $this->db->delete('user');
+            $this->db->reset_query();
+
+            return print_r(1);
+
+        }
+        else if($d['action']=='removeGuru'){
+            $ID = $d['ID'];
+
+            $dataSoal = $this->db->get_where('soal',array(
+                'CreatedBy' => $ID
+            ))->result_array();
+
+            if(count($dataSoal)>0){
+
+                foreach ($dataSoal AS $item){
+                    $this->db->where('IDSoal', $item['ID']);
+                    $this->db->delete(array(
+                        'soal_alasan' , 'soal_pilihan', 'testing_details'
+                    ));
+                    $this->db->reset_query();
+                }
+
+            }
+
+            $this->db->where('CreatedBy', $ID);
+            $this->db->delete(array('soal','indikator'));
+            $this->db->reset_query();
+
+            $this->db->where('ID', $ID);
+            $this->db->delete('user');
+            $this->db->reset_query();
+
+            return print_r(1);
+
+        }
 
     }
 

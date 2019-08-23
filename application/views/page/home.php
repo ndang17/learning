@@ -37,7 +37,7 @@
 <div style="min-height: 100px;background: #8ba8af;text-align: center;padding: 20px;border-bottom: 9px solid #ffc107;">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12" id="foo">
                 <img src="<?php echo base_url('images/unnes.png') ?>" style="max-width: 100%;max-width: 100px;">
                 <h1 style="color: #FFFFFF;font-weight: bold;text-shadow: 2px 2px 2px #5E5E5E;">E-Diagnostic Test</h1>
             </div>
