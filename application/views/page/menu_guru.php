@@ -33,7 +33,7 @@
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='list-soal'){echo 'active';} ?>"><a href="<?php echo base_url('guru/list-soal'); ?>">Soal</a></li>
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='list-siswa'){echo 'active';} ?>"><a href="<?php echo base_url('guru/list-siswa'); ?>">Analisa 1</a></li>
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='analisis-2'){echo 'active';} ?>"><a href="<?php echo base_url('guru/analisis-2'); ?>">Analisa 2</a></li>
-                        <li role="presentation" class="<?php if($this->uri->segment(2)=='analisis-3'){echo 'active';} ?>"><a href="<?php echo base_url('guru/analisis-3'); ?>">Analisa 3</a></li>
+                        <li role="presentation" class="<?php if($this->uri->segment(2)=='analisis-3'){echo 'active';} ?>"><a href="<?php echo base_url('guru/analisis-3/1'); ?>">Analisa 3</a></li>
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='analisis-4'){echo 'active';} ?>"><a href="<?php echo base_url('guru/analisis-4'); ?>">Analisa 4</a></li>
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='analisis-5'){echo 'active';} ?>"><a href="<?php echo base_url('guru/analisis-5'); ?>">Analisa 5</a></li>
                         <li role="presentation" class="<?php if($this->uri->segment(2)=='analisis-6'){echo 'active';} ?>"><a href="<?php echo base_url('guru/analisis-6'); ?>">Analisa 6</a></li>

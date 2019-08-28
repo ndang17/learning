@@ -24,7 +24,7 @@ $route['guru/listpembahasan/(:num)'] = 'c_home/listpembahasan/$1';
 
 $route['guru/analisis-1/(:num)'] = 'c_home/analisis_1/$1';
 $route['guru/analisis-2'] = 'c_home/analisis_2';
-$route['guru/analisis-3'] = 'c_home/analisis_3';
+$route['guru/analisis-3/(:num)'] = 'c_home/analisis_3/$1';
 
 $route['guru/analisis-4'] = 'c_home/analisis_4';
 
@@ -48,7 +48,7 @@ $route['__crudTimer'] = 'c_rest/crudTimer';
 $route['__selectOption'] = 'c_rest/selectOption';
 
 $route['__getAnalisis2/(:num)'] = 'c_rest/getAnalisis2/$1';
-$route['__getAnalisis3/(:num)'] = 'c_rest/getAnalisis3/$1';
+$route['__getAnalisis3/(:num)/(:any)'] = 'c_rest/getAnalisis3/$1/$2';
 $route['__getAnalisis4'] = 'c_rest/getAnalisis4';
 
 

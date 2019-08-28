@@ -220,10 +220,14 @@ class C_rest extends CI_Controller {
 
         else if($d['action']=='mulaiTest'){
 
+            // Get Setting
+            $setting = $this->db->get_where('setting_gelombang',array('Status'=>'1'))->result_array();
+
             // Insert Ke ID Test
             $arrInset = array(
                 'IDUser' => $this->session->userdata('ID'),
                 'DateTime' => $this->getDateTimeNow(),
+                'IDGelombang' => $setting[0]['ID'],
                 'Token' => md5($d['Token'].'_'.$this->session->userdata('ID'))
             );
             $this->db->insert('testing',$arrInset);
@@ -241,10 +245,6 @@ class C_rest extends CI_Controller {
 
             $this->db->insert('timer',$insTm);
 
-
-
-            // Get Setting
-            $setting = $this->db->get_where('setting_gelombang',array('Status'=>'1'))->result_array();
 
             $jumlahSoal = $setting[0]['Nilai'];
 
@@ -272,6 +272,9 @@ class C_rest extends CI_Controller {
 
             $IDTestLama = $d['ID'];
 
+            // Get Setting
+            $settingGelombang = $this->db->get_where('setting_gelombang',array('Status'=>'1'))->result_array();
+
             // Get ID Soal yang IDKategorinya selain 1
             $dataS = $this->db->get_where('testing_details',
                 array('IDTest' => $IDTestLama, 'IDKategori !=' => '1'))->result_array();
@@ -281,6 +284,7 @@ class C_rest extends CI_Controller {
                 // Insert Ke ID Test
                 $arrInset = array(
                     'IDUser' => $this->session->userdata('ID'),
+                    'IDGelombang' => $settingGelombang[0]['ID'],
                     'DateTime' => $this->getDateTimeNow(),
                     'Token' => $d['Token'],
                     'Type' => '2'
@@ -302,12 +306,15 @@ class C_rest extends CI_Controller {
 
                 foreach ($dataS AS $item){
 
+
                     // Get data soal
                     $dataSoal = $this->db->get_where('soal',array(
                         'ID' => $item['IDSoal']
                     ))->result_array();
 
                     $IDIndikator = $dataSoal[0]['IDIndikator'];
+
+
 
                     // Select Soal 2
                     $dataSoal2 = $this->db->get_where('soal',array(
@@ -909,16 +916,21 @@ class C_rest extends CI_Controller {
 
     }
 
-    public function getAnalisis3($IDSoal){
+    public function getAnalisis3($IDSoal,$Sekolah){
 
         // Get All soal
 //        $dataSoal = $this->db->select('IDKategori')->get_where('testing_details',array(
 //            'IDSoal' => $IDSoal
 //        ))->result_array();
 
+        $ws = ($Sekolah!=0) ? ' AND u.Sekolah = "'.$Sekolah.'" ' : '';
+
         $dataSoal = $this->db->query('SELECT td.IDKategori FROM testing_details td 
                                                 LEFT JOIN testing t ON (t.ID = td.IDTest)
-                                                WHERE td.IDSoal = "'.$IDSoal.'" AND t.Status = "1" ')->result_array();
+                                                LEFT JOIN user u ON (u.ID = t.IDUser)
+                                                WHERE td.IDSoal = "'.$IDSoal.'" 
+                                                AND t.Status = "1" '.$ws.' 
+                                                ORDER BY td.IDKategori ASC')->result_array();
 
         // ID kategori : 1 = Paham, 2 = Tidak Paham, 3 = Miskonsepsi
         $result = array(
@@ -967,15 +979,21 @@ class C_rest extends CI_Controller {
 
         $sch = $this->input->get('sch');
         $g = $this->input->get('g');
+        $Type = $this->input->get('t');
 
         // Get total student
         $where = '';
+        $whereType2 = '';
         if($sch!='-'){
             $where = ' AND Sekolah = "'.$sch.'" ';
+            $whereType2 = ' AND u.Sekolah = "'.$sch.'" ';
         }
 
         // Jumlah soal
-        $q = 'SELECT t.ID FROM testing t  LEFT JOIN user u ON (u.ID = t.IDUser) WHERE u.Sebagai = "siswa" AND t.Status="1" AND t.Type = "1"  AND t.IDGelombang = "'.$g.'" '.$where;
+        $q = 'SELECT t.ID FROM testing t  LEFT JOIN user u ON (u.ID = t.IDUser) 
+                            WHERE u.Sebagai = "siswa" 
+                            AND t.Status="1" AND t.Type = "1"  
+                            AND t.IDGelombang = "'.$g.'" '.$where;
 
         $dataSoal = $this->db->query('SELECT t.* FROM testing t 
                                             LEFT JOIN user u ON (u.ID = t.IDUser)
@@ -1006,25 +1024,113 @@ class C_rest extends CI_Controller {
 
             if(count($dataIDSoal)>0){
 
+
+
                 foreach ($dataIDSoal AS $item){
+
+
                     $IDSoal = $item['IDSoal'];
-                    $q_p = 'SELECT td.* FROM testing_details td WHERE td.IDTest IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND td.IDKategori = "1" ';
+                    $q_p = 'SELECT td.* FROM testing_details td WHERE td.IDTest 
+                                        IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND td.IDKategori = "1" ';
                     $data_p = $this->db->query($q_p)->result_array();
 
-                    $q_tp = 'SELECT td.* FROM testing_details td WHERE td.IDTest IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND (td.IDKategori = "2" OR IDKombinasi IS NULL OR td.IDKombinasi = "")';
+                    $P = count($data_p);
+
+                    $q_tp = 'SELECT td.*, t.Token, s.IDIndikator FROM testing_details td 
+                                            LEFT JOIN testing t ON (t.ID = td.IDTest)
+                                            LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                            WHERE td.IDTest 
+                                            IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" 
+                                            AND (td.IDKategori = "2" OR IDKombinasi IS NULL OR td.IDKombinasi = "")';
                     $data_tp = $this->db->query($q_tp)->result_array();
 
-                    $q_m = 'SELECT td.* FROM testing_details td WHERE td.IDTest IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND td.IDKategori = "3"';
+                    $TP = ($Type==2 || $Type=='2') ? 0 : count($data_tp);
+
+                    $q_m = 'SELECT td.*, t.Token, s.IDIndikator  FROM testing_details td 
+                                            LEFT JOIN testing t ON (t.ID = td.IDTest)
+                                            LEFT JOIN soal s ON (s.ID = td.IDSoal)
+                                            WHERE td.IDTest 
+                                            IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" 
+                                            AND td.IDKategori = "3"';
                     $data_m = $this->db->query($q_m)->result_array();
+
+                    $M = ($Type==2 || $Type=='2') ? 0 : count($data_m);
+
+                    $data2_tp_q = '';
+                    $data2_tp = '';
+                    $data2_m_q = '';
+                    $data2_m = '';
+
+                    if($Type==2 || $Type=='2'){
+
+                        if(count($data_tp)>0){
+                            for($t=0;$t<count($data_tp);$t++){
+
+                                // Cek ID soal
+                                $checkIDSoal = $this->db->query('SELECT ID FROM soal 
+                                                                        WHERE IDIndikator = "'.$data_tp[$t]['IDIndikator'].'" 
+                                                                        AND TypeSoal = "2" ')->result_array();
+
+                                $IDsoal2 = (count($checkIDSoal)>0) ? $checkIDSoal[0]['ID'] : $IDSoal;
+
+                                $data2_tp_q = 'SELECT td.IDKategori FROM testing_details td LEFT JOIN testing t ON (t.ID = td.IDTest) LEFT JOIN user u ON (u.ID = t.IDUser) WHERE t.Token = "'.$data_tp[$t]['Token'].'" AND t.IDGelombang = "'.$g.'" AND td.IDSoal = "'.$IDsoal2.'" '.$whereType2;
+
+                                $data2_tp = $this->db->query($data2_tp_q)->result_array();
+
+                                if(count($data2_tp)>0){
+                                    foreach ($data2_tp AS $item2_tp){
+                                        if($item2_tp['IDKategori']=='1' || $item2_tp['IDKategori']==1){
+                                            $P = $P+1;
+                                        } else if($item2_tp['IDKategori']=='3' || $item2_tp['IDKategori']==3){
+                                            $M = $M+1;
+                                        } else {
+                                            $TP = $TP+1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if(count($data_m)>0){
+                            for($t=0;$t<count($data_m);$t++){
+
+                                // Cek ID soal
+                                $checkIDSoal = $this->db->query('SELECT ID FROM soal 
+                                                                        WHERE IDIndikator = "'.$data_m[$t]['IDIndikator'].'" 
+                                                                        AND TypeSoal = "2" ')->result_array();
+
+                                $IDsoal3 = (count($checkIDSoal)>0) ? $checkIDSoal[0]['ID'] : $IDSoal;
+
+                                $data2_m_q = 'SELECT td.IDKategori FROM testing_details td LEFT JOIN testing t ON (t.ID = td.IDTest) LEFT JOIN user u ON (u.ID = t.IDUser) WHERE t.Token = "'.$data_m[$t]['Token'].'" AND t.IDGelombang = "'.$g.'" AND td.IDSoal = "'.$IDsoal3.'" '.$whereType2;
+                                $data2_m = $this->db->query($data2_m_q)->result_array();
+
+                                if(count($data2_m)>0){
+                                    foreach ($data2_m AS $item2_m){
+                                        if($item2_m['IDKategori']=='1' || $item2_m['IDKategori']==1){
+                                            $P = $P+1;
+                                        } else if($item2_m['IDKategori']=='3' || $item2_m['IDKategori']==3){
+                                            $M = $M+1;
+                                        } else {
+                                            $TP = $TP+1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     $res = array(
                         'IDSoal' => $IDSoal,
-                        'q_p' => $q_p,
-                        'q_tp' => $q_tp,
-                        'q_m' => $q_m,
-                        'P' => count($data_p),
-                        'TP' => count($data_tp),
-                        'M' => count($data_m)
+//                        'q_p' => $q_p,
+                        'q_tp' => $data_tp,
+                        'q_m' => $data_m,
+                        'data2_tp_q' => $data2_tp_q,
+                        'data2_m_q' => $data2_m_q,
+                        'data2_tp' => $data2_tp,
+                        'data2_m' => $data2_m,
+                        'P' => $P,
+                        'TP' => $TP,
+                        'M' => $M
                     );
 
                     array_push($result,$res);

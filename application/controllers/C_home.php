@@ -293,10 +293,12 @@ class C_home extends MY_Controller {
         //guru_analisis_2
     }
 
-    public function analisis_3(){
+    public function analisis_3($Type){
 
         // Get All soal
-        $data['dataSoal'] = $this->db->select('ID,Soal')->get('soal')->result_array();
+        $data['dataSoal'] = $this->db->select('ID,Soal')->get_where('soal',array(
+            'TypeSoal' => $Type
+        ))->result_array();
 
         $page = $this->load->view('page/guru_analisis_3',$data,true);
         $this->menu_guru($page);

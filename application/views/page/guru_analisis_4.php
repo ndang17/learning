@@ -7,16 +7,22 @@
 </style>
 
 <div class="row">
-    <div class="col-md-6 col-md-offset-3">
+    <div class="col-md-8 col-md-offset-2">
         <div class="well">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <select class="form-control" id="filterSekolah">
                         <option value="">Semua Sekolah</option>
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select class="form-control" id="filterGelombang"></select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" id="filterType">
+                        <option value="1">Tes 1</option>
+                        <option value="2">Remidial</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -53,7 +59,6 @@
 
         var frisLod = setInterval(function () {
 
-            var filterSekolah = $('#filterSekolah').val();
             var filterGelombang = $('#filterGelombang').val();
             if(filterGelombang!='' && filterGelombang!=null){
                 loadAnalisa4();
@@ -64,7 +69,7 @@
 
     });
 
-    $('#filterSekolah,#filterGelombang').change(function () {
+    $('#filterSekolah,#filterGelombang,#filterType').change(function () {
         loadAnalisa4();
     });
 
@@ -72,10 +77,11 @@
 
         var filterSekolah = $('#filterSekolah').val();
         var filterGelombang = $('#filterGelombang').val();
+        var filterType = $('#filterType').val();
 
         if(filterGelombang!='' && filterGelombang!=null){
             var sch = (filterSekolah!='') ? filterSekolah : '-';
-            var url =base_url_js+'__getAnalisis4?sch='+sch+'&g='+filterGelombang;
+            var url =base_url_js+'__getAnalisis4?sch='+sch+'&g='+filterGelombang+'&t='+filterType;
 
             $.getJSON(url,function (jsonResult) {
 
