@@ -67,7 +67,7 @@
             };
 
             $.post(url,{formData : data},function (jsonResult) {
-               console.log(jsonResult);
+               // console.log(jsonResult);
                if(jsonResult.length>0){
 
                    $.each(jsonResult,function (i,v) {

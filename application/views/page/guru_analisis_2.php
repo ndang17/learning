@@ -132,39 +132,6 @@
 
     }
 
-    function printDiv()
-    {
 
-        var divToPrint=document.getElementById('DivIdToPrint');
-
-        var newWin=window.open('','Print-Window');
-
-        newWin.document.open();
-
-        newWin.document.write('<html>' +
-            '<link href="'+base_url_js+'assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">' +
-            '<style>' +
-            '@page{size:landscape;}' +
-            '    .container-image {' +
-            '        display: inherit;' +
-            '        position: relative;' +
-            '        text-align: center;' +
-            '        color: white;' +
-            '        border: 2px solid #FFFFFF;' +
-            '    }' +
-            '    .centered {' +
-            '        position: absolute;' +
-            '        top: 50%;' +
-            '        left: 50%;' +
-            '        transform: translate(-50%, -50%);' +
-            '    }' +
-            '</style>' +
-            '<body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
-
-        newWin.document.close();
-
-        setTimeout(function(){newWin.close();},10);
-
-    }
 
 </script>

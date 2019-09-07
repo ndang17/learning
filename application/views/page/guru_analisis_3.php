@@ -101,7 +101,9 @@
 
         var filterSekolah = $('#filterSekolah').val();
 
-        var url = base_url_js+'__getAnalisis3/'+ID+'/'+filterSekolah;
+        var filterTPSoal = $('#filterTPSoal').val();
+
+        var url = base_url_js+'__getAnalisis3/'+ID+'/'+filterTPSoal+'/'+filterSekolah;
 
         $('#showChart').html('<div id="chartContainer" style="height: 370px;width: 100%;max-width: 920px; margin: 0px auto;"></div>');
 

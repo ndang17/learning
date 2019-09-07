@@ -296,9 +296,10 @@ class C_home extends MY_Controller {
     public function analisis_3($Type){
 
         // Get All soal
-        $data['dataSoal'] = $this->db->select('ID,Soal')->get_where('soal',array(
-            'TypeSoal' => $Type
-        ))->result_array();
+
+        $data['dataSoal'] = $this->db->query('SELECT s.* FROM soal s 
+                                                    WHERE s.TypeSoal = "'.$Type.'" 
+                                                    ORDER BY s.IDIndikator, s.ID ASC')->result_array();
 
         $page = $this->load->view('page/guru_analisis_3',$data,true);
         $this->menu_guru($page);
@@ -310,6 +311,20 @@ class C_home extends MY_Controller {
         $data['dataSoal'] = '';
 
         $page = $this->load->view('page/guru_analisis_4',$data,true);
+        $this->menu_guru($page);
+    }
+    public function analisis_5(){
+
+        $data['dataSoal'] = '';
+
+        $page = $this->load->view('page/guru_analisis_5',$data,true);
+        $this->menu_guru($page);
+    }
+    public function analisis_6(){
+
+        $data['dataSoal'] = '';
+
+        $page = $this->load->view('page/guru_analisis_6',$data,true);
         $this->menu_guru($page);
     }
 

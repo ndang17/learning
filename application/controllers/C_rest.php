@@ -916,7 +916,7 @@ class C_rest extends CI_Controller {
 
     }
 
-    public function getAnalisis3($IDSoal,$Sekolah){
+    public function getAnalisis3($IDSoal,$Type,$Sekolah){
 
         // Get All soal
 //        $dataSoal = $this->db->select('IDKategori')->get_where('testing_details',array(
@@ -928,7 +928,8 @@ class C_rest extends CI_Controller {
         $dataSoal = $this->db->query('SELECT td.IDKategori FROM testing_details td 
                                                 LEFT JOIN testing t ON (t.ID = td.IDTest)
                                                 LEFT JOIN user u ON (u.ID = t.IDUser)
-                                                WHERE td.IDSoal = "'.$IDSoal.'" 
+                                                WHERE td.IDSoal = "'.$IDSoal.'"
+                                                AND t.Type = "'.$Type.'" 
                                                 AND t.Status = "1" '.$ws.' 
                                                 ORDER BY td.IDKategori ASC')->result_array();
 
@@ -1152,6 +1153,56 @@ class C_rest extends CI_Controller {
         );
 
         return print_r(json_encode($r));
+
+    }
+
+    public function getAnalisis5($IDSekolah,$IDGelombang){
+
+        $data = $this->db->query('SELECT u.* FROM user u 
+                                          WHERE u.Sekolah = "'.$IDSekolah.'" 
+                                          AND u.Sebagai = "siswa" 
+                                          ORDER BY u.ID ASC')->result_array();
+
+        $result = [];
+        if(count($data)>0){
+
+            for($i=0;$i<count($data);$i++){
+
+                // Get data Gelombang
+                $dataG = $this->db->get_where('setting_gelombang',array(
+                    'ID' => $IDGelombang
+                ))->result_array();
+
+                $BanyakSoal = (count($dataG)>0) ? $dataG[0]['Nilai'] : 0 ;
+
+                // Testing 1
+                $dataTest_1 = $this->db->query('SELECT td.* FROM testing_details td 
+                                                        LEFT JOIN testing t ON (t.ID = td.IDTest)
+                                                        LEFT JOIN setting_gelombang sg ON (sg.ID = t.IDGelombang)
+                                                        WHERE t.IDUser = "'.$data[$i]['ID'].'" 
+                                                        AND t.IDGelombang = "'.$IDGelombang.'"
+                                                        AND t.Type = "1" ')->result_array();
+
+                $dataTest_2 = $this->db->query('SELECT td.* FROM testing_details td 
+                                                        LEFT JOIN testing t ON (t.ID = td.IDTest)
+                                                        LEFT JOIN setting_gelombang sg ON (sg.ID = t.IDGelombang)
+                                                        WHERE t.IDUser = "'.$data[$i]['ID'].'" 
+                                                        AND t.IDGelombang = "'.$IDGelombang.'"
+                                                        AND t.Type = "2" ')->result_array();
+
+                if(count($dataTest_1)>0){
+                    $data[$i]['BanyakSoal'] = $BanyakSoal;
+                    $data[$i]['dataTest_1'] = $dataTest_1;
+                    $data[$i]['dataTest_2'] = $dataTest_2;
+
+                    array_push($result,$data[$i]);
+                }
+
+            }
+
+        }
+
+        return print_r(json_encode($result));
 
     }
 
