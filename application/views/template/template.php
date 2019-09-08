@@ -38,6 +38,9 @@
     <!-- Canvas -->
     <script type="text/javascript" src="<?php echo base_url('assets/canvas/canvasjs.min.js'); ?>"></script>
 
+<!--     table2excel -->
+    <script type="text/javascript" src="<?php echo base_url('assets/table2excel/jquery.table2excel.min.js'); ?>"></script>
+
     <script>
 
         window.base_url_js = "<?php echo base_url(); ?>";
@@ -93,7 +96,7 @@
 
                     $.each(jsonResult,function (i,v) {
 
-                        $(elm).append('<option value="'+v.ID+'">'+v.Nama+'</option>');
+                        $(elm).append('<option value="'+v.ID+'" data-n="'+v.Nilai+'">'+v.Nama+'</option>');
                     })
 
                 }

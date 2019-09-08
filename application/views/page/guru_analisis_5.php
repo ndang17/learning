@@ -87,8 +87,6 @@
 
                 if(jsonResult.length>0){
 
-                    var arrrIDBenar = ['1','2','3'];
-
                     var jumlahBenar_1 = 0;
                     var jumlahSiswa_1 = jsonResult.length;
                     var jumlahBenar_2 = 0;
@@ -102,7 +100,7 @@
                         var JumlahBenarSOal1 = 0;
                         if(dataTest_1.length>0){
                             $.each(dataTest_1,function (i2,v2) {
-                                if($.inArray(''+v2.IDKombinasi,arrrIDBenar)!=-1){
+                                if(parseInt(v2.IDKategori)==1){
                                     JumlahBenarSOal1 = JumlahBenarSOal1+1
                                 }
                             });
@@ -117,23 +115,26 @@
                         var JumlahBenarSOal2 = 0;
                         if(dataTest_2.length>0){
                             $.each(dataTest_2,function (i2,v2) {
-                                if($.inArray(''+v2.IDKombinasi,arrrIDBenar)!=-1){
+                                if(parseInt(v2.IDKategori)==1){
                                     JumlahBenarSOal2 = JumlahBenarSOal2+1
                                 }
                             });
                         }
 
                         var percentaseBenar2 = (JumlahBenarSOal2>0)
-                            ? (JumlahBenarSOal2/BanyakSoal) * 100 : 0;
+                            ? (JumlahBenarSOal2/BanyakSoal) * 100 : 100;
                         jumlahBenar_2 = jumlahBenar_2+percentaseBenar2;
 
+                        if(dataTest_1.length>0){
+                            $('#listHasil').append('<tr>' +
+                                '<td>'+(i+1)+'</td>' +
+                                '<td style="text-align: left;">'+v.Nama+'</td>' +
+                                '<td>'+percentaseBenar1.toFixed(2)+'</td>' +
+                                '<td>'+percentaseBenar2.toFixed(2)+'</td>' +
+                                '</tr>');
+                        }
 
-                        $('#listHasil').append('<tr>' +
-                            '<td>'+(i+1)+'</td>' +
-                            '<td style="text-align: left;">'+v.Nama+'</td>' +
-                            '<td>'+percentaseBenar1.toFixed(2)+'</td>' +
-                            '<td>'+percentaseBenar2.toFixed(2)+'</td>' +
-                            '</tr>');
+
                     });
 
                     var rata_1 = (jumlahBenar_1>0) ? jumlahBenar_1/jumlahSiswa_1 : 0;

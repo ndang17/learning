@@ -54,5 +54,6 @@ $route['__getAnalisis2/(:num)'] = 'c_rest/getAnalisis2/$1';
 $route['__getAnalisis3/(:num)/(:num)/(:any)'] = 'c_rest/getAnalisis3/$1/$2/$3';
 $route['__getAnalisis4'] = 'c_rest/getAnalisis4';
 $route['__getAnalisis5/(:num)/(:num)'] = 'c_rest/getAnalisis5/$1/$2';
+$route['__getAnalisis6/(:num)/(:num)'] = 'c_rest/getAnalisis6/$1/$2';
 
 
