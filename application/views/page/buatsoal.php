@@ -110,17 +110,37 @@
         $('#formSoal').summernote({
             height : 200,
             // width : 700,
-            airMode : false,
-            onImageUpload: function(files, editor, welEditable) {
-                sendFile(files[0], editor, welEditable);
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage('#formSoal',image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
             }
         });
-        $('#formPilihan_1,#formAlasan_1').summernote({
+        $('#formPilihan_1').summernote({
             height : 100,
             // width : 700,
-            airMode : false,
-            onImageUpload: function(files, editor, welEditable) {
-                sendFile(files[0], editor, welEditable);
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage('#formPilihan_1',image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
+            }
+        });
+        $('#formAlasan_1').summernote({
+            height : 100,
+            // width : 700,
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage('#formAlasan_1',image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
             }
         });
     });
@@ -178,8 +198,14 @@
 
         $('#formPilihan_'+newTotal).summernote({
             height : 100,
-            // width : 700,
-            airMode : false
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage('#formPilihan_'+newTotal,image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
+            }
         });
 
         loadJawaban();
@@ -220,7 +246,15 @@
         $('#formAlasan_'+newTotal).summernote({
             height : 100,
             // width : 700,
-            airMode : false
+
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage('#formAlasan_'+newTotal,image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
+            }
         });
 
         loadJawabanAlasan();

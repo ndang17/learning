@@ -107,7 +107,14 @@
             $('#Penjelasan').summernote({
                 height : 200,
                 // width : 700,
-                airMode : false
+                callbacks: {
+                    onImageUpload: function(image) {
+                        uploadImage('#Penjelasan',image[0]);
+                    },
+                    onMediaDelete : function(target) {
+                        deleteImage(target[0].src);
+                    }
+                }
             });
             ds = false;
         }
