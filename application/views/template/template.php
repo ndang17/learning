@@ -111,6 +111,37 @@
         }
 
 
+        function uploadImage(element,image) {
+            var data = new FormData();
+            data.append("image", image);
+            $.ajax({
+                url: "<?php echo site_url('post/upload_image')?>",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: data,
+                type: "POST",
+                success: function(url) {
+                    $(element).summernote("insertImage", url);
+                },
+                error: function(data) {
+                    console.log(data);
+                }
+            });
+        }
+
+        function deleteImage(src) {
+            $.ajax({
+                data: {src : src},
+                type: "POST",
+                url: "<?php echo site_url('post/delete_image')?>",
+                cache: false,
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+        }
+
     </script>
 
     <style>

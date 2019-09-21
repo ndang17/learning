@@ -127,17 +127,32 @@
 
         $('#formSoal').summernote({
             height : 200,
-            // width : 700,
-            airMode : false
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage('#formSoal',image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
+            }
         });
 
         $('.form-jawaban,.form-alasan').summernote({
             height : 100,
             // width : 700,
-            airMode : false
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage(this,image[0]);
+                },
+                onMediaDelete : function(target) {
+                    deleteImage(target[0].src);
+                }
+            }
         });
 
     });
+
+
 
 
 
