@@ -125,8 +125,8 @@
                     toolTipContent: "{name}: <strong>{y}%</strong>",
                     indexLabel: "{name} - {y}%",
                     dataPoints: [
-                        { y: jsonResult.M, name: "Miskonsepsi", color : '#f0ad4e' },
-                        { y: jsonResult.TP, name: "Tidak Paham", color: '#d9534f' },
+                        { y: jsonResult.M, name: "Miskonsepsi", color : '#d9534f' },
+                        { y: jsonResult.TP, name: "Tidak Paham", color: '#f0ad4e' },
                         { y: jsonResult.P, name: "Paham", color : '#5cb85c', exploded: true }
                     ]
                 }]

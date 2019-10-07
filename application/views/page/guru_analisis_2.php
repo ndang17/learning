@@ -16,24 +16,27 @@
     }
 </style>
 
+<div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+        <div class="well">
+            <select class="form-control" id="filterSekolah"></select>
+        </div>
+        <hr/>
+
+    </div>
+    <div class="col-xs-4" style="text-align: right;">
+        <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
+    </div>
+</div>
+
 <div id="DivIdToPrint">
 
-    <div class="row">
-        <div class="col-xs-4 col-xs-offset-4">
-            <div class="well">
-                <select class="form-control" id="filterSekolah"></select>
-            </div>
-            <hr/>
 
-        </div>
-        <div class="col-xs-4" style="text-align: right;">
-            <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
-        </div>
-    </div>
 
     <div class="row">
 
         <div class="col-md-12">
+            <h3 id="viewSekolah"></h3>
             <div id="loadTable"></div>
         </div>
     </div>
@@ -69,6 +72,8 @@
         var filterSekolah = $('#filterSekolah').val();
 
         if(filterSekolah!=null && filterSekolah!=''){
+
+            $('#viewSekolah').html($('#filterSekolah option:selected').text());
 
             var url =base_url_js+'__getAnalisis2/'+filterSekolah;
 

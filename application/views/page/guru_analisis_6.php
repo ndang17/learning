@@ -5,29 +5,33 @@
     }
 </style>
 
-<div id="DivIdToPrint">
-    <div class="row">
-        <div class="col-xs-6 col-xs-offset-3">
-            <div class="well">
-                <div class="row">
-                    <div class="col-xs-8">
-                        <select class="form-control" id="filterSekolah"></select>
-                    </div>
-                    <div class="col-xs-4">
-                        <select class="form-control" id="filterGelombang"></select>
-                    </div>
+<div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+        <div class="well">
+            <div class="row">
+                <div class="col-xs-8">
+                    <select class="form-control" id="filterSekolah"></select>
+                </div>
+                <div class="col-xs-4">
+                    <select class="form-control" id="filterGelombang"></select>
                 </div>
             </div>
         </div>
-
-        <div class="col-xs-3" style="text-align: right;">
-            <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
-        </div>
     </div>
+
+    <div class="col-xs-3" style="text-align: right;">
+        <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
+    </div>
+</div>
+
+<div id="DivIdToPrint">
+
 
     <div class="row">
 
         <div class="col-md-12">
+
+            <h3 id="viewSekolah"></h3>
             <table class="table table-bordered tableData table2excel" data-tableName="Soal tes 1">
                 <thead>
                 <tr id="viewHeader"></tr>
@@ -125,6 +129,8 @@
         if(filterSekolah!='' && filterSekolah!=null
             && filterGelombang!='' && filterGelombang!=null){
 
+            $('#viewSekolah').html($('#filterSekolah option:selected').text()+' - '+$('#filterGelombang option:selected').text());
+
             $('#viewHeader,#viewNomorSoal,#viewJumlahSoal,#viewData').empty();
             $('#viewHeader_alasan,#viewNomorSoal_alasan,#viewJumlahSoal_alasan,#viewData_alasan').empty();
 
@@ -140,7 +146,7 @@
                 $('#viewJumlahSoal').append('<th style="width: 1%;">'+i+'</th>');
             }
 
-            $('#viewHeader_alasan').append('<th colspan="'+(2+jmlSoal)+'"><h4>Tabel Analisis Alasan Jawaban Siswa pada Tes 1</h4></th>');
+            $('#viewHeader_alasan').append('<th colspan="'+(2+jmlSoal)+'" style="text-align: center;"><h4>Tabel Analisis Alasan Jawaban Siswa pada Tes 1</h4></th>');
             $('#viewNomorSoal_alasan').append('<th style="width: 1%;" rowspan="2">No</th><th style="" rowspan="2">Siswa</th>' +
                 '<th colspan="'+jmlSoal+'">Nomor Soal</th>');
             for(var i=1;i<=jmlSoal;i++){

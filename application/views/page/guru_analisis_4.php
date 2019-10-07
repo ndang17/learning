@@ -28,10 +28,14 @@
         </div>
         <hr/>
     </div>
+    <div class="col-md-2" style="text-align: right;">
+        <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
+    </div>
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12" id="DivIdToPrint">
+        <h3 id="viewSekolah"></h3>
         <table class="table table-striped table-bordered" id="tableAns4">
             <thead>
             <tr>
@@ -80,6 +84,11 @@
         var filterType = $('#filterType').val();
 
         if(filterGelombang!='' && filterGelombang!=null){
+
+            $('#viewSekolah').html($('#filterSekolah option:selected').text()+' - '+
+                $('#filterGelombang option:selected').text()+' - '+
+                $('#filterType option:selected').text());
+
             var sch = (filterSekolah!='') ? filterSekolah : '-';
             var url =base_url_js+'__getAnalisis4?sch='+sch+'&g='+filterGelombang+'&t='+filterType;
 

@@ -55,10 +55,8 @@
                 <div class="col-md-8">
                     <div class="alert alert-warning" role="alert">
                         <b>Aturan E-Diagnostic Test</b>
-                        <ol>
-                            <li>Waktu pengerjaan 30 menit</li>
-                            <li>Boleh menggunakan sisa waktu ujian untuk mengoreksi jawaban sebelum jawaban dikirim</li>
-                        </ol>
+                        <hr/>
+                        <?= (count($Aturan)>0) ? $Aturan[0]['Deskripsi'] : ''; ?>
                     </div>
                     <div class="well" id="viewMulaiBtn" style="padding: 15px;text-align: center;">
                         <button class="btn btn-success" id="btnMulai"><b>Mulai</b> E-Diagnostic Test</button>

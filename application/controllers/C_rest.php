@@ -826,6 +826,26 @@ class C_rest extends CI_Controller {
             return print_r(1);
 
         }
+        else if($d['action']=='insertAturan'){
+
+            $dataCk = $this->db->get('setting_aturan')->result_array();
+            if(count($dataCk)>0){
+                $this->db->where('ID', $dataCk[0]['ID']);
+                $this->db->update('setting_aturan',array(
+                    'Deskripsi' => $d['Deskripsi']
+                ));
+            } else {
+                $this->db->insert('setting_aturan',array(
+                    'Deskripsi' => $d['Deskripsi']
+                ));
+            }
+
+            return print_r(1);
+        }
+        else if($d['action']=='getAturan'){
+            $dataCk = $this->db->get('setting_aturan')->result_array();
+            return print_r(json_encode($dataCk));
+        }
 
     }
 

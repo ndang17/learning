@@ -1,12 +1,21 @@
-<div class="row" style="margin-top: 20px;margin-bottom: 30px;">
+<style>
+    .thumbnail h3 {
+        border-left: 13px solid orange;
+        padding-left: 10px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+</style>
 
 
+<div class="row" style="margin-top: 20px;">
 
-    <div class="col-md-3">
+    <div class="col-md-6">
 <!--        <div class="form-group">-->
 <!--            <label>Jumlah soal untuk tes</label>-->
 <!--            <input class="form-control" id="formSoal" value="--><?//= $DataSeting[0]['Nilai']; ?><!--">-->
 <!--        </div>-->
+        <h3>Mengatur Waktu Pengerjaan</h3>
         <div class="form-group">
             <label>Waktu pengerjaan (menit)</label>
             <input class="form-control" id="formDurasi" value="<?= $DataSeting[1]['Nilai']; ?>">
@@ -24,48 +33,85 @@
         </div>
     </div>
 
-    <div class="col-md-3" style="border-left: 1px solid #CCCCCC;">
-        <div class="form-group">
-            <label>Keterangan</label>
-            <input class="hide" id="formID">
-            <input class="form-control" id="formNama">
-        </div>
-        <div class="form-group">
-            <label>Jumlah Soal</label>
-            <input class="form-control" id="formNilai">
-        </div>
-        <div class="form-group">
-            <label>Status</label>
-            <select class="form-control" id="formStatus">
-                <option value="1">Aktif</option>
-                <option value="0">Non aktif</option>
-            </select>
-        </div>
-        <div class="form-group" style="text-align: right;">
-            <button class="btn btn-default" id="simpanGel">Simpan</button>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>No</th>
-                <th>Keterangan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-            </thead>
-            <tbody id="showSetGel"></tbody>
-        </table>
-    </div>
-    <textarea class="hide" id="dataGel"></textarea>
+</div>
 
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+        <h3>Mengatur Jumlah Soal dan Gelombang Pengerjaan</h3>
+    </div>
+    <div class="">
+        <div class="col-md-4">
+
+            <div class="form-group">
+                <label>Keterangan</label>
+                <input class="hide" id="formID">
+                <input class="form-control" id="formNama">
+            </div>
+            <div class="form-group">
+                <label>Jumlah Soal</label>
+                <input class="form-control" id="formNilai">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select class="form-control" id="formStatus">
+                    <option value="1">Aktif</option>
+                    <option value="0">Non aktif</option>
+                </select>
+            </div>
+            <div class="form-group" style="text-align: right;">
+                <button class="btn btn-success" id="simpanGel">Simpan</button>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Keterangan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+                </thead>
+                <tbody id="showSetGel"></tbody>
+            </table>
+        </div>
+        <textarea class="hide" id="dataGel"></textarea>
+    </div>
+</div>
+
+<div class="row" style="margin-bottom: 70px;">
+    <div class="col-md-12">
+        <hr/>
+        <h3>Aturan Pengerjaan</h3>
+        <textarea id="formAturan"></textarea>
+
+        <div style="text-align: right;">
+            <button class="btn btn-success" id="btnSaveAturan">Simpan</button>
+        </div>
+    </div>
 </div>
 
 <script>
 
     $(document).ready(function () {
         loadDataGel();
+
+        getAturan();
+
+        $('#formAturan').summernote({
+            height : 200,
+            // width : 700,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']]
+            ]
+        });
     });
 
     $('#btnSave').click(function () {
@@ -194,8 +240,42 @@
             });
         }
 
+    });
 
+    $('#btnSaveAturan').click(function () {
+
+        var formAturan = $('#formAturan').val();
+        if(formAturan!='' && formAturan!=null){
+
+            var formData = {
+                action : 'insertAturan',
+                Deskripsi : formAturan
+            };
+
+            var url = base_url_js+'__crudMenuAdmin';
+
+            $.post(url,{formData:formData},function (Result) {
+                toastr.success('Data tersimpan','Sukses');
+            });
+
+        }
 
     });
+
+    function getAturan() {
+        var formData = {
+            action : 'getAturan'
+        };
+
+        var url = base_url_js+'__crudMenuAdmin';
+        $.post(url,{formData:formData},function (jsonResult) {
+
+            if(jsonResult.length>0){
+                $('#formAturan').summernote('code', jsonResult[0].Deskripsi);
+            } else {
+                $('#formAturan').summernote('code', '');
+            }
+        });
+    }
 
 </script>

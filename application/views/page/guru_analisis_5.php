@@ -5,28 +5,31 @@
     }
 </style>
 
-<div id="DivIdToPrint">
-    <div class="row">
-        <div class="col-xs-6 col-xs-offset-3">
-            <div class="well">
-                <div class="row">
-                    <div class="col-xs-8">
-                        <select class="form-control" id="filterSekolah"></select>
-                    </div>
-                    <div class="col-xs-4">
-                        <select class="form-control" id="filterGelombang"></select>
-                    </div>
+<div class="row">
+    <div class="col-xs-8 col-xs-offset-2">
+        <div class="well">
+            <div class="row">
+                <div class="col-xs-8">
+                    <select class="form-control" id="filterSekolah"></select>
+                </div>
+                <div class="col-xs-4">
+                    <select class="form-control" id="filterGelombang"></select>
                 </div>
             </div>
         </div>
-
-        <div class="col-xs-3" style="text-align: right;">
-            <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
-        </div>
     </div>
+
+    <div class="col-xs-2" style="text-align: right;">
+        <button class="btn btn-primary btn-lg" onclick="printDiv();">Cetak</button>
+    </div>
+</div>
+
+<div id="DivIdToPrint">
+
 
     <div class="row">
         <div class="col-md-12">
+            <h3 id="viewSekolah"></h3>
             <table class="table table-bordered" id="tableAnlisis5">
                 <thead>
                 <tr>
@@ -81,6 +84,9 @@
         var filterGelombang = $('#filterGelombang').val();
         if(filterSekolah!='' && filterSekolah!=null
             && filterGelombang!='' && filterGelombang!=null){
+
+            $('#viewSekolah').html($('#filterSekolah option:selected').text()+' - '+$('#filterGelombang option:selected').text());
+
             $('#listHasil').empty();
             var url = base_url_js+'__getAnalisis5/'+filterSekolah+'/'+filterGelombang;
             $.getJSON(url,function (jsonResult) {

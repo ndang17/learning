@@ -145,6 +145,7 @@ class C_home extends MY_Controller {
 
         if($this->checkSessions('siswa')){
             $data['header'] = $this->header();
+            $data['Aturan'] = $this->db->get('setting_aturan')->result_array();
             $content = $this->load->view('page/siswa',$data,true);
             parent::template($content);
         } else {
