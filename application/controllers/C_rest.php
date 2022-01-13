@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class C_rest extends CI_Controller {
+class C_rest extends CI_Controller
+{
 
 
     function __construct()
@@ -13,42 +14,47 @@ class C_rest extends CI_Controller {
         date_default_timezone_set("Asia/Jakarta");
     }
 
-    private function getPost(){
+    private function getPost()
+    {
         $data = $this->input->post('formData');
         return (array) $data;
     }
 
-    private function getDateTimeNow(){
+    private function getDateTimeNow()
+    {
         return date('Y-m-d H:i:s');
     }
 
-    private function getDateNow(){
+    private function getDateNow()
+    {
         return date('Y-m-d');
     }
 
-    private function getTimeNow(){
+    private function getTimeNow()
+    {
         return date('H:i:s');
     }
 
-    public function selectOption(){
+    public function selectOption()
+    {
         $d = $this->getPost();
 
-        if($d['action']=='SO_sekolah'){
-            $data = $this->db->order_by('Name','ASC')->get('sekolah')->result_array();
+        if ($d['action'] == 'SO_sekolah') {
+            $data = $this->db->order_by('Name', 'ASC')->get('sekolah')->result_array();
 
             return print_r(json_encode($data));
-        }
-        else if($d['action']=='SO_gelombang'){
-            $data = $this->db->order_by('ID','ASC')->get('setting_gelombang')->result_array();
+        } else if ($d['action'] == 'SO_gelombang') {
+            $data = $this->db->order_by('ID', 'ASC')->get('setting_gelombang')->result_array();
             return print_r(json_encode($data));
         }
     }
 
-    public function crudUser(){
+    public function crudUser()
+    {
 
         $d = $this->getPost();
 
-        if($d['action']=='insertNewUser'){
+        if ($d['action'] == 'insertNewUser') {
 
             $dataInsert = (array) $d['dataInsert'];
             $dataInsertTemp = (array) $d['dataInsert'];
@@ -56,67 +62,60 @@ class C_rest extends CI_Controller {
             $dataInsert['Password'] = md5($dataInsertTemp['Password']);
             $dataInsert['CreatedAt'] = $this->getDateTimeNow();
 
-            $this->db->insert('user',$dataInsert);
+            $this->db->insert('user', $dataInsert);
 
             return print_r(1);
-
-        }
-        else if ($d['action']=='checkLogin') {
+        } else if ($d['action'] == 'checkLogin') {
             $Sebagai = $d['Sebagai'];
             $User = $d['User'];
             $Pass = md5($d['Password']);
 
             $data = $this->db->query('SELECT u.* FROM user u WHERE 
-                                                u.Password = "'.$Pass.'" AND
-                                                u.Sebagai = "'.$Sebagai.'" AND
-                                                (u.Username LIKE "'.$User.'" OR u.Email LIKE "'.$User.'" )
+                                                u.Password = "' . $Pass . '" AND
+                                                u.Sebagai = "' . $Sebagai . '" AND
+                                                (u.Username LIKE "' . $User . '" OR u.Email LIKE "' . $User . '" )
                                                 LIMIT 1')
                 ->result_array();
 
             $ret = 0;
-            if(count($data)>0){
+            if (count($data) > 0) {
                 $this->session->set_userdata($data[0]);
                 $ret = 1;
             }
 
             return print_r($ret);
-
         }
-
-
     }
 
-    public function crudSoal(){
+    public function crudSoal()
+    {
         $d = $this->getPost();
 
-        if($d['action']=='addSoal'){
+        if ($d['action'] == 'addSoal') {
 
             $dataIns = $d['soal'];
 
-            $this->db->insert('soal',$dataIns);
+            $this->db->insert('soal', $dataIns);
             $insert_id = $this->db->insert_id();
 
             // insert ke soal_pilihan
             $arrPilihan = $d['arrPilihan'];
-            for($i=0;$i<count($arrPilihan);$i++){
+            for ($i = 0; $i < count($arrPilihan); $i++) {
                 $arrPilihan[$i]['IDSoal'] = $insert_id;
-                $this->db->insert('soal_pilihan',$arrPilihan[$i]);
+                $this->db->insert('soal_pilihan', $arrPilihan[$i]);
             }
 
 
             // insert ke soal_alasan
             $arrAlasan = $d['arrAlasan'];
-            for($i=0;$i<count($arrAlasan);$i++){
+            for ($i = 0; $i < count($arrAlasan); $i++) {
                 $arrAlasan[$i]['IDSoal'] = $insert_id;
-                $this->db->insert('soal_alasan',$arrAlasan[$i]);
+                $this->db->insert('soal_alasan', $arrAlasan[$i]);
             }
 
 
             return print_r(1);
-
-
-        }
-        else if($d['action']=='updateSoal'){
+        } else if ($d['action'] == 'updateSoal') {
 
 
             $IDSoal = $d['IDSoal'];
@@ -137,49 +136,49 @@ class C_rest extends CI_Controller {
             // insert ke soal_pilihan
             $insert_id = $IDSoal;
             $arrPilihan = $d['arrPilihan'];
-            for($i=0;$i<count($arrPilihan);$i++){
+            for ($i = 0; $i < count($arrPilihan); $i++) {
                 $arrPilihan[$i]['IDSoal'] = $insert_id;
-                $this->db->insert('soal_pilihan',$arrPilihan[$i]);
+                $this->db->insert('soal_pilihan', $arrPilihan[$i]);
             }
 
 
             // insert ke soal_alasan
             $arrAlasan = $d['arrAlasan'];
-            for($i=0;$i<count($arrAlasan);$i++){
+            for ($i = 0; $i < count($arrAlasan); $i++) {
                 $arrAlasan[$i]['IDSoal'] = $insert_id;
-                $this->db->insert('soal_alasan',$arrAlasan[$i]);
+                $this->db->insert('soal_alasan', $arrAlasan[$i]);
             }
 
 
             return print_r(1);
+        } else if ($d['action'] == 'readSoal') {
 
-
-        }
-        else if($d['action']=='readSoal'){
-
-            $dataSoal = $this->db->get_where('soal',array('CreatedBy'=>$d['ID']))->result_array();
+            $dataSoal = $this->db->get_where('soal', array('CreatedBy' => $d['ID']))->result_array();
 
             return print_r(json_encode($dataSoal));
-        }
-        else if($d['action']=='readDetailsSoal'){
-            $dataSoal = $this->db->get_where('soal'
-                ,array('ID'=>$d['IDSoal']))->result_array();
+        } else if ($d['action'] == 'readDetailsSoal') {
+            $dataSoal = $this->db->get_where(
+                'soal',
+                array('ID' => $d['IDSoal'])
+            )->result_array();
 
             // Detail Soal
-            $dataPilihan = $this->db->order_by('Urutan ASC')->get_where('soal_pilihan'
-                ,array('IDSoal'=>$d['IDSoal']))->result_array();
+            $dataPilihan = $this->db->order_by('Urutan ASC')->get_where(
+                'soal_pilihan',
+                array('IDSoal' => $d['IDSoal'])
+            )->result_array();
 
             // Detail Alasan
-            $dataAlasan = $this->db->order_by('Urutan ASC')->get_where('soal_alasan'
-                ,array('IDSoal'=>$d['IDSoal']))->result_array();
+            $dataAlasan = $this->db->order_by('Urutan ASC')->get_where(
+                'soal_alasan',
+                array('IDSoal' => $d['IDSoal'])
+            )->result_array();
 
             $dataSoal[0]['Details'] = $dataPilihan;
             $dataSoal[0]['DetailsAlasan'] = $dataAlasan;
 
             return print_r(json_encode($dataSoal[0]));
-
-        }
-        else if($d['action']=='deleteSoal'){
+        } else if ($d['action'] == 'deleteSoal') {
 
             $this->db->where('ID', $d['IDSoal']);
             $this->db->delete('soal');
@@ -189,97 +188,90 @@ class C_rest extends CI_Controller {
             $this->db->delete('soal_pilihan');
 
             return print_r(1);
-        }
-
-
-        else if($d['action']=='loadListTest'){
-//            $data = $this->db->get_where('testing',array(
-//                'IDUser' => $this->session->userdata('ID')
-//            ))->result_array();
+        } else if ($d['action'] == 'loadListTest') {
+            //            $data = $this->db->get_where('testing',array(
+            //                'IDUser' => $this->session->userdata('ID')
+            //            ))->result_array();
 
             $data = $this->db->query('SELECT Token, DateTime FROM testing WHERE 
-                                              IDUser = "'.$this->session->userdata('ID').'" 
+                                              IDUser = "' . $this->session->userdata('ID') . '" 
                                               GROUP BY Token
                                               ORDER BY ID ASC
                                                ')->result_array();
 
-            if(count($data)>0){
-                for($i=0;$i<count($data);$i++){
+            if (count($data) > 0) {
+                for ($i = 0; $i < count($data); $i++) {
                     $dataDetail = $this->db->query('SELECT t.*, tm.Time FROM testing t 
                                                             LEFT JOIN timer tm ON (t.ID = tm.IDTest)
-                                                            WHERE t.Token = "'.$data[$i]['Token'].'" 
+                                                            WHERE t.Token = "' . $data[$i]['Token'] . '" 
                                                             ORDER BY t.ID ASC')->result_array();
 
                     $data[$i]['Details'] = $dataDetail;
-
                 }
             }
 
             return print_r(json_encode($data));
-        }
-
-        else if($d['action']=='mulaiTest'){
+        } else if ($d['action'] == 'mulaiTest') {
 
             // Get Setting
-            $setting = $this->db->get_where('setting_gelombang',array('Status'=>'1'))->result_array();
+            $setting = $this->db->get_where('setting_gelombang', array('Status' => '1'))->result_array();
 
             // Insert Ke ID Test
             $arrInset = array(
                 'IDUser' => $this->session->userdata('ID'),
                 'DateTime' => $this->getDateTimeNow(),
                 'IDGelombang' => $setting[0]['ID'],
-                'Token' => md5($d['Token'].'_'.$this->session->userdata('ID'))
+                'Token' => md5($d['Token'] . '_' . $this->session->userdata('ID'))
             );
-            $this->db->insert('testing',$arrInset);
+            $this->db->insert('testing', $arrInset);
             $IDTest = $this->db->insert_id();
 
             // Inserting ke timer
             $startTime = '00:00:00';
-            $settingTime = $this->db->get_where('setting',array('IDST'=>2))->result_array();
-            $cenvertedTime = date('H:i:s',strtotime('+'.$settingTime[0]['Nilai'].' minutes',strtotime($startTime)));
+            $settingTime = $this->db->get_where('setting', array('IDST' => 2))->result_array();
+            $cenvertedTime = date('H:i:s', strtotime('+' . $settingTime[0]['Nilai'] . ' minutes', strtotime($startTime)));
 
             $insTm = array(
                 'IDTest' => $IDTest,
                 'Time' => $cenvertedTime
             );
 
-            $this->db->insert('timer',$insTm);
+            $this->db->insert('timer', $insTm);
 
 
             $jumlahSoal = $setting[0]['Nilai'];
 
             // Random Soal
-            $dataSoal = $this->db->query('SELECT ID FROM soal WHERE TypeSoal = "1" ORDER BY IDIndikator ASC LIMIT '.$jumlahSoal)->result_array();
+            $dataSoal = $this->db->query('SELECT ID FROM soal WHERE TypeSoal = "1" ORDER BY IDIndikator ASC LIMIT ' . $jumlahSoal)->result_array();
 
             // Insert Ke tabel testing details
-            if(count($dataSoal)>0){
-                for ($i=0;$i<count($dataSoal);$i++){
+            if (count($dataSoal) > 0) {
+                for ($i = 0; $i < count($dataSoal); $i++) {
                     $d = $dataSoal[$i];
                     $arrIn = array(
                         'IDTest' => $IDTest,
                         'IDSoal' => $d['ID']
                     );
 
-                    $this->db->insert('testing_details',$arrIn);
+                    $this->db->insert('testing_details', $arrIn);
                 }
             }
 
-            return print_r(json_encode(array('IDTest'=>$IDTest)));
-
-        }
-
-        else if($d['action']=='mulaiTest2'){
+            return print_r(json_encode(array('IDTest' => $IDTest)));
+        } else if ($d['action'] == 'mulaiTest2') {
 
             $IDTestLama = $d['ID'];
 
             // Get Setting
-            $settingGelombang = $this->db->get_where('setting_gelombang',array('Status'=>'1'))->result_array();
+            $settingGelombang = $this->db->get_where('setting_gelombang', array('Status' => '1'))->result_array();
 
             // Get ID Soal yang IDKategorinya selain 1
-            $dataS = $this->db->get_where('testing_details',
-                array('IDTest' => $IDTestLama, 'IDKategori !=' => '1'))->result_array();
+            $dataS = $this->db->get_where(
+                'testing_details',
+                array('IDTest' => $IDTestLama, 'IDKategori !=' => '1')
+            )->result_array();
 
-            if(count($dataS)>0){
+            if (count($dataS) > 0) {
 
                 // Insert Ke ID Test
                 $arrInset = array(
@@ -289,26 +281,26 @@ class C_rest extends CI_Controller {
                     'Token' => $d['Token'],
                     'Type' => '2'
                 );
-                $this->db->insert('testing',$arrInset);
+                $this->db->insert('testing', $arrInset);
                 $IDTest = $this->db->insert_id();
 
                 $startTime = '00:00:00';
-                $settingTime = $this->db->get_where('setting',array('IDST'=>2))->result_array();
-                $cenvertedTime = date('H:i:s',strtotime('+'.$settingTime[0]['Nilai'].' minutes',strtotime($startTime)));
+                $settingTime = $this->db->get_where('setting', array('IDST' => 2))->result_array();
+                $cenvertedTime = date('H:i:s', strtotime('+' . $settingTime[0]['Nilai'] . ' minutes', strtotime($startTime)));
 
                 $insTm = array(
                     'IDTest' => $IDTest,
                     'Time' => $cenvertedTime
                 );
 
-                $this->db->insert('timer',$insTm);
+                $this->db->insert('timer', $insTm);
 
 
-                foreach ($dataS AS $item){
+                foreach ($dataS as $item) {
 
 
                     // Get data soal
-                    $dataSoal = $this->db->get_where('soal',array(
+                    $dataSoal = $this->db->get_where('soal', array(
                         'ID' => $item['IDSoal']
                     ))->result_array();
 
@@ -317,7 +309,7 @@ class C_rest extends CI_Controller {
 
 
                     // Select Soal 2
-                    $dataSoal2 = $this->db->get_where('soal',array(
+                    $dataSoal2 = $this->db->get_where('soal', array(
                         'IDIndikator' => $IDIndikator,
                         'TypeSoal' => '2'
                     ))->result_array();
@@ -328,33 +320,29 @@ class C_rest extends CI_Controller {
                         'IDSoal' => $item['IDSoal']
                     );
 
-                    if(count($dataSoal2)>0){
+                    if (count($dataSoal2) > 0) {
                         $newAr['IDSoal'] = $dataSoal2[0]['ID'];
                     }
 
-                    $this->db->insert('testing_details',$newAr);
+                    $this->db->insert('testing_details', $newAr);
                 }
 
                 return print_r(json_encode(array('IDTest' => $IDTest)));
             } else {
                 return print_r(json_encode(array('IDTest' => 0)));
             }
-
-
-
-        }
-        else if($d['action']=='testOnline'){
+        } else if ($d['action'] == 'testOnline') {
 
             $IDTest = $d['IDTest'];
 
             $dataIDtest = $this->db->query('SELECT td.*,s.Soal FROM testing_details td 
                                                       LEFT JOIN soal s ON (s.ID = td.IDSoal)
-                                                      WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
+                                                      WHERE td.IDTest = "' . $IDTest . '" ')->result_array();
 
             $soal = 0;
-            if(count($dataIDtest)>0){
-                for($i=0;$i<count($dataIDtest);$i++){
-                    if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+            if (count($dataIDtest) > 0) {
+                for ($i = 0; $i < count($dataIDtest); $i++) {
+                    if ($dataIDtest[$i]['Status'] == 0 || $dataIDtest[$i]['Status'] == '0') {
                         $soal = $dataIDtest[$i]['ID'];
                         break;
                     }
@@ -362,10 +350,7 @@ class C_rest extends CI_Controller {
             }
 
             return print_r(json_encode($soal));
-
-
-        }
-        else if($d['action']=='getJumpSoalOnline'){
+        } else if ($d['action'] == 'getJumpSoalOnline') {
 
             $IDTest = $d['IDTest'];
             $IDTD = $d['IDTD'];
@@ -376,18 +361,22 @@ class C_rest extends CI_Controller {
                                                        s.JawabanAlasan AS Kunci_JawabanAlasan
                                                         FROM testing_details td 
                                                       LEFT JOIN soal s ON (s.ID = td.IDSoal)
-                                                      WHERE td.ID = "'.$IDTD.'"  
+                                                      WHERE td.ID = "' . $IDTD . '"  
                                                       LIMIT 1')->result_array();
 
 
-            if(count($dataSoal)>0){
+            if (count($dataSoal) > 0) {
                 $IDSoal = $dataSoal[0]['IDSoal'];
-                $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where('soal_pilihan'
-                    ,array('IDSoal'=>$IDSoal))->result_array();
+                $dataPG = $this->db->order_by('ID', 'RANDOM')->get_where(
+                    'soal_pilihan',
+                    array('IDSoal' => $IDSoal)
+                )->result_array();
                 $dataSoal[0]['PilihanGanda'] = $dataPG;
 
-                $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where('soal_alasan'
-                    ,array('IDSoal'=>$IDSoal))->result_array();
+                $dataAPJ = $this->db->order_by('ID', 'RANDOM')->get_where(
+                    'soal_alasan',
+                    array('IDSoal' => $IDSoal)
+                )->result_array();
                 $dataSoal[0]['AlasanJawaban'] = $dataAPJ;
             }
 
@@ -395,7 +384,7 @@ class C_rest extends CI_Controller {
             $dataIDtest = $this->db->query('SELECT td.*,s.Soal 
                                                        FROM testing_details td
                                                       LEFT JOIN soal s ON (s.ID = td.IDSoal)
-                                                      WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
+                                                      WHERE td.IDTest = "' . $IDTest . '" ')->result_array();
 
 
             $arrSudahJawab = [];
@@ -405,31 +394,30 @@ class C_rest extends CI_Controller {
             $IDSoalNext = 0;
 
             // Get Detail Pilihan Ganda dan Alasan
-            if(count($dataIDtest)>0){
-                for($i=0;$i<count($dataIDtest);$i++){
+            if (count($dataIDtest) > 0) {
+                for ($i = 0; $i < count($dataIDtest); $i++) {
                     $IDSoalNext = $dataIDtest[$i]['ID'];
-                    if($dataIDtest[$i]['Status']==1 || $dataIDtest[$i]['Status']=='1'){
-                        array_push($arrSudahJawab,$dataIDtest[$i]['ID']);
-                    } else if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+                    if ($dataIDtest[$i]['Status'] == 1 || $dataIDtest[$i]['Status'] == '1') {
+                        array_push($arrSudahJawab, $dataIDtest[$i]['ID']);
+                    } else if ($dataIDtest[$i]['Status'] == 0 || $dataIDtest[$i]['Status'] == '0') {
                         break;
                     }
-
                 }
 
-                for($i=0;$i<count($dataIDtest);$i++){
-                    if($dataIDtest[$i]['ID']==$IDTD){
+                for ($i = 0; $i < count($dataIDtest); $i++) {
+                    if ($dataIDtest[$i]['ID'] == $IDTD) {
                         break;
                     }
-                    $noActive+=1;
+                    $noActive += 1;
                 }
             }
 
             //Load All ID
             $ArrAllID = [];
-            $dataIDAll = $this->db->select('ID')->order_by('ID','ASC')->get_where('testing_details',array('IDTest' => $IDTest))->result_array();
-            if(count($dataIDAll)>0){
-                foreach ($dataIDAll AS $item){
-                   array_push($ArrAllID,$item['ID']);
+            $dataIDAll = $this->db->select('ID')->order_by('ID', 'ASC')->get_where('testing_details', array('IDTest' => $IDTest))->result_array();
+            if (count($dataIDAll) > 0) {
+                foreach ($dataIDAll as $item) {
+                    array_push($ArrAllID, $item['ID']);
                 }
             }
 
@@ -445,8 +433,7 @@ class C_rest extends CI_Controller {
             );
 
             return print_r(json_encode($result));
-        }
-        else if($d['action']=='getHasilKombinasi'){
+        } else if ($d['action'] == 'getHasilKombinasi') {
 
             $Jawaban = $d['Jawaban'];
             $RatingJawaban = $d['RatingJawaban'];
@@ -455,10 +442,10 @@ class C_rest extends CI_Controller {
 
             $data = $this->db->query('SELECT kat.*, k.ID AS IDKombinasi FROM kombinasi k 
                                               LEFT JOIN kategori kat ON (k.IDKategori = kat.ID)
-                                              WHERE k.Jawaban LIKE "'.$Jawaban.'" 
-                                              AND k.RatingJawaban LIKE "'.$RatingJawaban.'" 
-                                              AND k.Alasan LIKE "'.$Alasan.'" 
-                                              AND k.RatingAlasan LIKE "'.$RatingAlasan.'"')->result_array();
+                                              WHERE k.Jawaban LIKE "' . $Jawaban . '" 
+                                              AND k.RatingJawaban LIKE "' . $RatingJawaban . '" 
+                                              AND k.Alasan LIKE "' . $Alasan . '" 
+                                              AND k.RatingAlasan LIKE "' . $RatingAlasan . '"')->result_array();
 
 
             // Update
@@ -469,7 +456,7 @@ class C_rest extends CI_Controller {
             $dataUpdate['IDKombinasi'] = $data[0]['IDKombinasi'];
 
             $this->db->where('ID', $IDTD);
-            $this->db->update('testing_details',$dataUpdate);
+            $this->db->update('testing_details', $dataUpdate);
 
 
             $IDTest = $d['IDTest'];
@@ -477,51 +464,48 @@ class C_rest extends CI_Controller {
             $dataIDtest = $this->db->query('SELECT td.*,s.Soal 
                                                        FROM testing_details td
                                                       LEFT JOIN soal s ON (s.ID = td.IDSoal)
-                                                      WHERE td.IDTest = "'.$IDTest.'" ')->result_array();
+                                                      WHERE td.IDTest = "' . $IDTest . '" ')->result_array();
             $IDSoalNext = 0;
-            if(count($dataIDtest)>0){
-                for ($i=0;$i<count($dataIDtest);$i++){
+            if (count($dataIDtest) > 0) {
+                for ($i = 0; $i < count($dataIDtest); $i++) {
                     $IDSoalNext = $dataIDtest[$i]['ID'];
-                    if($dataIDtest[$i]['Status']==0 || $dataIDtest[$i]['Status']=='0'){
+                    if ($dataIDtest[$i]['Status'] == 0 || $dataIDtest[$i]['Status'] == '0') {
                         break;
                     }
                 }
             }
 
             return print_r(json_encode($IDSoalNext));
-
-        }
-
-
-        else if($d['action']=='listIndikator'){
+        } else if ($d['action'] == 'listIndikator') {
 
             $CreatedBy = $d['ID'];
 
-            $data = $this->db->order_by('ID','DESC')->get_where('indikator',array('CreatedBy'=>$CreatedBy))->result_array();
+            $data = $this->db->order_by('ID', 'DESC')->get_where('indikator', array('CreatedBy' => $CreatedBy))->result_array();
 
-            if(count($data)>0){
-                for ($i=0;$i<count($data);$i++){
-                    $data[$i]['Soal1'] = $this->db->get_where('soal',
-                        array('IDIndikator'=>$data[$i]['ID'], 'TypeSoal' => '1'))->result_array();
-                    $data[$i]['Soal2'] = $this->db->get_where('soal',
-                        array('IDIndikator'=>$data[$i]['ID'], 'TypeSoal' => '2'))->result_array();
+            if (count($data) > 0) {
+                for ($i = 0; $i < count($data); $i++) {
+                    $data[$i]['Soal1'] = $this->db->get_where(
+                        'soal',
+                        array('IDIndikator' => $data[$i]['ID'], 'TypeSoal' => '1')
+                    )->result_array();
+                    $data[$i]['Soal2'] = $this->db->get_where(
+                        'soal',
+                        array('IDIndikator' => $data[$i]['ID'], 'TypeSoal' => '2')
+                    )->result_array();
                 }
             }
 
             return print_r(json_encode($data));
-
-        }
-        else if($d['action']=='crudIndikator'){
+        } else if ($d['action'] == 'crudIndikator') {
 
             // Cek apakah insert atau update
 
             $ID = $d['ID'];
 
-            if($ID!=''){
+            if ($ID != '') {
                 $this->db->set('Indikator', $d['Indikator']);
                 $this->db->where('ID', $ID);
                 $this->db->update('indikator');
-
             } else {
 
                 $dataIns = array(
@@ -529,20 +513,18 @@ class C_rest extends CI_Controller {
                     'CreatedBy' => $d['CreatedBy']
                 );
 
-                $this->db->insert('indikator',$dataIns);
+                $this->db->insert('indikator', $dataIns);
             }
 
             return print_r(1);
-
-        }
-        else if($d['action']=='removeIndikator'){
+        } else if ($d['action'] == 'removeIndikator') {
             $ID = $d['ID'];
 
-            $dataSoal = $this->db->select('ID')->get_where('soal',array(
+            $dataSoal = $this->db->select('ID')->get_where('soal', array(
                 'IDIndikator' => $ID
             ))->result_array();
 
-            if(count($dataSoal)>0){
+            if (count($dataSoal) > 0) {
                 $IDSoal = $dataSoal[0]['ID'];
 
                 // Hapus detail soal
@@ -563,14 +545,14 @@ class C_rest extends CI_Controller {
             $this->db->reset_query();
 
             return print_r(1);
-
         }
     }
 
-    public function crudPembahasan(){
+    public function crudPembahasan()
+    {
         $d = $this->getPost();
 
-        if($d['action']=='insertPembahasan'){
+        if ($d['action'] == 'insertPembahasan') {
 
             $dataInsert = (array) $d['dataInsert'];
 
@@ -580,41 +562,40 @@ class C_rest extends CI_Controller {
             return print_r(json_encode(
                 array('insert_id' => $insert_id)
             ));
+        } else if ($d['action'] == 'showPembahasan') {
 
-        }
-        else if($d['action']=='showPembahasan'){
-
-            $data = $this->db->get_where('pembahasan'
-                ,array('IDIndikator'=>$d['IDIndikator']))->result_array();
+            $data = $this->db->get_where(
+                'pembahasan',
+                array('IDIndikator' => $d['IDIndikator'])
+            )->result_array();
 
             return print_r(json_encode($data));
+        } else if ($d['action'] == 'removePembahasan') {
 
-        }
-        else if($d['action']=='removePembahasan'){
-
-            if($d['Type']=='1' || $d['Type']==1 || $d['Type']=='3'
-                || $d['Type']==3){
+            if (
+                $d['Type'] == '1' || $d['Type'] == 1 || $d['Type'] == '3'
+                || $d['Type'] == 3
+            ) {
                 $this->db->where('ID', $d['ID']);
                 $this->db->delete('pembahasan');
 
                 return print_r(1);
+            } else {
+                $data = $this->db->get_where(
+                    'pembahasan',
+                    array('ID' => $d['ID'])
+                )->result_array();
             }
-            else {
-                $data = $this->db->get_where('pembahasan'
-                    ,array('ID'=>$d['ID']))->result_array();
-            }
-
-        }
-        else if($d['action']=='seePembahasan'){
+        } else if ($d['action'] == 'seePembahasan') {
 
             // Type pembahasan
             $dataPembahasanType = $this->db->get('pembahasan_type')->result_array();
 
-            for($i=0;$i<count($dataPembahasanType);$i++){
+            for ($i = 0; $i < count($dataPembahasanType); $i++) {
 
                 $dataPembahasan = $this->db->query('SELECT p.* FROM pembahasan p 
-                                                        WHERE p.IDIndikator = "'.$d['IDIndikator'].'" 
-                                                        AND p.Type = "'.$dataPembahasanType[$i]['ID'].'" ')
+                                                        WHERE p.IDIndikator = "' . $d['IDIndikator'] . '" 
+                                                        AND p.Type = "' . $dataPembahasanType[$i]['ID'] . '" ')
                     ->result_array();
 
                 $dataPembahasanType[$i]['Pembahasan'] = $dataPembahasan;
@@ -623,43 +604,40 @@ class C_rest extends CI_Controller {
 
 
             return print_r(json_encode($dataPembahasanType));
-
         }
-
     }
 
-    public function crudMenuAdmin(){
+    public function crudMenuAdmin()
+    {
         $d = $this->getPost();
 
-        if($d['action']=='biodata'){
+        if ($d['action'] == 'biodata') {
             // Cek apakah sudah ada atau blm
             $dataBio = $this->db->limit(1)->get('biodata')->result_array();
 
-            if(count($dataBio)>0){
+            if (count($dataBio) > 0) {
                 $this->db->set('Biodata', $d['Biodata']);
                 $this->db->where('ID', $dataBio[0]['ID']);
                 $this->db->update('biodata');
             } else {
-                $this->db->insert('biodata', array('Biodata'=>$d['Biodata']));
+                $this->db->insert('biodata', array('Biodata' => $d['Biodata']));
             }
 
             return print_r(1);
-        }
-        else if($d['action']=='readBiodata'){
+        } else if ($d['action'] == 'readBiodata') {
             $data = $this->db->limit(1)->get('biodata')->result_array();
 
             return print_r(json_encode($data));
-        }
-        else if($d['action']=='loginAdmin'){
+        } else if ($d['action'] == 'loginAdmin') {
             $Username = $d['Username'];
             $Password = md5($d['Password']);
 
-            $check = $this->db->get_where('admin',array(
+            $check = $this->db->get_where('admin', array(
                 'Username' => $Username,
                 'Password' => $Password
             ))->result_array();
 
-            if(count($check)>0){
+            if (count($check) > 0) {
 
                 // Set Sessions
                 $check[0]['LoginAdmin'] = true;
@@ -675,16 +653,14 @@ class C_rest extends CI_Controller {
             }
 
             return print_r(json_encode($result));
-
-        }
-        else if($d['action']=='setting'){
+        } else if ($d['action'] == 'setting') {
             // Waktu
             // Soal
 
-            $this->db->set('Nilai', $d['Soal']);
-            $this->db->where('ID', 1);
-            $this->db->update('setting');
-            $this->db->reset_query();
+            // $this->db->set('Nilai', $d['Soal']);
+            // $this->db->where('ID', 1);
+            // $this->db->update('setting');
+            // $this->db->reset_query();
 
             $this->db->set('Nilai', $d['Waktu']);
             $this->db->where('ID', 2);
@@ -697,63 +673,51 @@ class C_rest extends CI_Controller {
             $this->db->reset_query();
 
             return print_r(1);
-        }
-        else if($d['action']=='readSekolah'){
+        } else if ($d['action'] == 'readSekolah') {
 
             $data = $this->db->order_by('Name', 'ASC')
                 ->get('sekolah')->result_array();
 
             return print_r(json_encode($data));
-
-        }
-        else if($d['action']=='showStudentBySekolah'){
+        } else if ($d['action'] == 'showStudentBySekolah') {
 
             $SekolahID = $d['SekolahID'];
 
-            $w_sekolah = ($SekolahID=='all') ? '' : ' AND u.Sekolah = "'.$SekolahID.'" ';
+            $w_sekolah = ($SekolahID == 'all') ? '' : ' AND u.Sekolah = "' . $SekolahID . '" ';
             $dataScho = $this->db->query('SELECT u.*, s.Name AS Sekolah_Nama, s.Alamat AS Sekolah_Alamat FROM user u 
                                                 LEFT JOIN sekolah s ON (s.ID = u.Sekolah)
-                                                WHERE u.Sebagai = "siswa" '.$w_sekolah.' ORDER BY u.ID ASC ')
+                                                WHERE u.Sebagai = "siswa" ' . $w_sekolah . ' ORDER BY u.ID ASC ')
                 ->result_array();
 
             return print_r(json_encode($dataScho));
-
-        }
-        else if($d['action']=='addDataSekolah'){
+        } else if ($d['action'] == 'addDataSekolah') {
 
             $dataInsert = (array) $d['dataInsert'];
 
-            $this->db->insert('sekolah',$dataInsert);
+            $this->db->insert('sekolah', $dataInsert);
 
             return print_r(1);
-
-        }
-        else if($d['action']=='delDataSekolah'){
+        } else if ($d['action'] == 'delDataSekolah') {
 
             $this->db->where('ID', $d['ID']);
             $this->db->delete('sekolah');
             $this->db->reset_query();
 
             return print_r(1);
-
-        }
-        else if($d['action']=='gelombangRead'){
+        } else if ($d['action'] == 'gelombangRead') {
             $data = $this->db->get('setting_gelombang')->result_array();
             return print_r(json_encode($data));
-        }
-        else if($d['action']=='gelombangUpdate'){
+        } else if ($d['action'] == 'gelombangUpdate') {
             $formD = (array) $d['formD'];
             $this->db->where('ID', $d['ID']);
-            $this->db->update('setting_gelombang',$formD);
+            $this->db->update('setting_gelombang', $formD);
 
             return print_r(1);
-        }
-        else if($d['action']=='gelombangInsert'){
+        } else if ($d['action'] == 'gelombangInsert') {
             $formD = (array) $d['formD'];
-            $this->db->insert('setting_gelombang',$formD);
+            $this->db->insert('setting_gelombang', $formD);
             return print_r(1);
-        }
-        else if($d['action']=='updateNewPassword'){
+        } else if ($d['action'] == 'updateNewPassword') {
             $ID = $d['ID'];
             $Password = md5($d['Password']);
 
@@ -762,25 +726,20 @@ class C_rest extends CI_Controller {
             $this->db->update('user');
 
             return print_r(1);
-
-
-
-        }
-        else if($d['action']=='removeStudent'){
+        } else if ($d['action'] == 'removeStudent') {
 
             $ID = $d['ID'];
 
             //Get User ID
-            $dataTest = $this->db->get_where('testing',array(
+            $dataTest = $this->db->get_where('testing', array(
                 'IDUser' => $ID
             ))->result_array();
 
-            if(count($dataTest)>0){
-                foreach ($dataTest AS $item){
+            if (count($dataTest) > 0) {
+                foreach ($dataTest as $item) {
                     $this->db->where('IDTest', $item['ID']);
                     $this->db->delete('testing_details');
                     $this->db->reset_query();
-
                 }
 
 
@@ -794,29 +753,26 @@ class C_rest extends CI_Controller {
             $this->db->reset_query();
 
             return print_r(1);
-
-        }
-        else if($d['action']=='removeGuru'){
+        } else if ($d['action'] == 'removeGuru') {
             $ID = $d['ID'];
 
-            $dataSoal = $this->db->get_where('soal',array(
+            $dataSoal = $this->db->get_where('soal', array(
                 'CreatedBy' => $ID
             ))->result_array();
 
-            if(count($dataSoal)>0){
+            if (count($dataSoal) > 0) {
 
-                foreach ($dataSoal AS $item){
+                foreach ($dataSoal as $item) {
                     $this->db->where('IDSoal', $item['ID']);
                     $this->db->delete(array(
-                        'soal_alasan' , 'soal_pilihan', 'testing_details'
+                        'soal_alasan', 'soal_pilihan', 'testing_details'
                     ));
                     $this->db->reset_query();
                 }
-
             }
 
             $this->db->where('CreatedBy', $ID);
-            $this->db->delete(array('soal','indikator'));
+            $this->db->delete(array('soal', 'indikator'));
             $this->db->reset_query();
 
             $this->db->where('ID', $ID);
@@ -824,36 +780,33 @@ class C_rest extends CI_Controller {
             $this->db->reset_query();
 
             return print_r(1);
-
-        }
-        else if($d['action']=='insertAturan'){
+        } else if ($d['action'] == 'insertAturan') {
 
             $dataCk = $this->db->get('setting_aturan')->result_array();
-            if(count($dataCk)>0){
+            if (count($dataCk) > 0) {
                 $this->db->where('ID', $dataCk[0]['ID']);
-                $this->db->update('setting_aturan',array(
+                $this->db->update('setting_aturan', array(
                     'Deskripsi' => $d['Deskripsi']
                 ));
             } else {
-                $this->db->insert('setting_aturan',array(
+                $this->db->insert('setting_aturan', array(
                     'Deskripsi' => $d['Deskripsi']
                 ));
             }
 
             return print_r(1);
-        }
-        else if($d['action']=='getAturan'){
+        } else if ($d['action'] == 'getAturan') {
             $dataCk = $this->db->get('setting_aturan')->result_array();
             return print_r(json_encode($dataCk));
         }
-
     }
 
-    public function crudTimer(){
+    public function crudTimer()
+    {
 
         $d = $this->getPost();
 
-        if($d['action']=='updateTimer'){
+        if ($d['action'] == 'updateTimer') {
             // Cek apakah sudah ada IDnya
             // jika ada maka update
             // jika tidak maka insert
@@ -861,96 +814,90 @@ class C_rest extends CI_Controller {
             $IDTest = $d['IDTest'];
             $Time = $d['Time'];
 
-            $dataTime = $this->db->get_where('timer',array(
+            $dataTime = $this->db->get_where('timer', array(
                 'IDTest' => $IDTest
             ))->result_array();
 
-            if(count($dataTime)>0){
+            if (count($dataTime) > 0) {
                 // Update
 
                 $arrUpdt = array(
                     'Time' => $Time
                 );
 
-                if($Time=='00:00:00'){
+                if ($Time == '00:00:00') {
                     $arrUpdt['Status'] = '1';
                 }
 
                 $this->db->where('IDTest', $IDTest);
-                $this->db->update('timer',$arrUpdt);
-
+                $this->db->update('timer', $arrUpdt);
             } else {
                 // Insert
                 $dataIns = array(
                     'IDTest' => $IDTest,
                     'Time' => $Time
                 );
-                $this->db->insert('timer',$dataIns);
+                $this->db->insert('timer', $dataIns);
             }
-        } else if ($d['action']=='getTimerNow') {
+        } else if ($d['action'] == 'getTimerNow') {
 
-            $data = $this->db->get_where('timer',array(
+            $data = $this->db->get_where('timer', array(
                 'IDTest' => $d['IDTest']
             ))->result_array();
 
-            $tm = ($data[0]['Status']=='0' || $data[0]['Status']==0)
+            $tm = ($data[0]['Status'] == '0' || $data[0]['Status'] == 0)
                 ? $data[0]['Time'] : '00:00:00';
-            $result = array('EndSessions'=>$tm);
+            $result = array('EndSessions' => $tm);
 
             return print_r(json_encode($result));
-
         }
-
-
-
     }
 
-    public function getAnalisis2($IDSekolah){
+    public function getAnalisis2($IDSekolah)
+    {
 
         $data = $this->db->query('SELECT * FROM user u 
-                                            WHERE u.Sebagai = "siswa" AND u.Sekolah = "'.$IDSekolah.'" ')->result_array();
+                                            WHERE u.Sebagai = "siswa" AND u.Sekolah = "' . $IDSekolah . '" ')->result_array();
 
-        if(count($data)>0){
-            for($i=0;$i<count($data);$i++){
+        if (count($data) > 0) {
+            for ($i = 0; $i < count($data); $i++) {
                 $d = $data[$i];
 
                 // Cek berapa kali tes
                 $dataTest = $this->db->query('SELECT * FROM  testing t
-                                                        WHERE t.IDUser = "'.$d['ID'].'" AND t.Status = "1" ')->result_array();
+                                                        WHERE t.IDUser = "' . $d['ID'] . '" AND t.Status = "1" ')->result_array();
 
-                if(count($dataTest)>0){
-                    for ($t=0;$t<count($dataTest);$t++){
+                if (count($dataTest) > 0) {
+                    for ($t = 0; $t < count($dataTest); $t++) {
                         $dataTest[$t]['Detail'] = $this->db->query('SELECT * FROM testing_details td 
-                                                                            WHERE td.IDTest = "'.$dataTest[$t]['ID'].'" ')
-                                                                ->result_array();
+                                                                            WHERE td.IDTest = "' . $dataTest[$t]['ID'] . '" ')
+                            ->result_array();
                     }
                 }
 
                 $data[$i]['Test'] = $dataTest;
-
-
             }
         }
 
         return print_r(json_encode($data));
-
     }
 
-    public function getAnalisis3($IDSoal,$Type,$Sekolah){
+    public function getAnalisis3($IDSoal, $Type, $Sekolah)
+    {
 
         // Get All soal
-//        $dataSoal = $this->db->select('IDKategori')->get_where('testing_details',array(
-//            'IDSoal' => $IDSoal
-//        ))->result_array();
+        //        $dataSoal = $this->db->select('IDKategori')->get_where('testing_details',array(
+        //            'IDSoal' => $IDSoal
+        //        ))->result_array();
 
-        $ws = ($Sekolah!=0) ? ' AND u.Sekolah = "'.$Sekolah.'" ' : '';
+        $ws = ($Sekolah != 0) ? ' AND u.Sekolah = "' . $Sekolah . '" ' : '';
 
         $dataSoal = $this->db->query('SELECT td.IDKategori FROM testing_details td 
                                                 LEFT JOIN testing t ON (t.ID = td.IDTest)
                                                 LEFT JOIN user u ON (u.ID = t.IDUser)
-                                                WHERE td.IDSoal = "'.$IDSoal.'"
-                                                AND t.Type = "'.$Type.'" 
-                                                AND t.Status = "1" '.$ws.' 
+                                                WHERE td.IDSoal = "' . $IDSoal . '"
+                                                AND t.Type = "' . $Type . '" 
+                                                AND t.Status = "1" ' . $ws . ' 
                                                 ORDER BY td.IDKategori ASC')->result_array();
 
         // ID kategori : 1 = Paham, 2 = Tidak Paham, 3 = Miskonsepsi
@@ -960,43 +907,42 @@ class C_rest extends CI_Controller {
             'M' => 0
         );
 
-        if(count($dataSoal)>0){
+        if (count($dataSoal) > 0) {
             $totalP = count($dataSoal);
             $T_P = 0;
             $T_TP = 0;
             $T_M = 0;
-            foreach ($dataSoal AS $item){
+            foreach ($dataSoal as $item) {
 
-                if($item['IDKategori']=='1' || $item['IDKategori']==1){
-                    $T_P = $T_P+1;
-                } else if($item['IDKategori']=='2' || $item['IDKategori']==2){
-                    $T_TP = $T_TP+1;
-                } else if($item['IDKategori']=='3' || $item['IDKategori']==3){
-                    $T_M = $T_M+1;
+                if ($item['IDKategori'] == '1' || $item['IDKategori'] == 1) {
+                    $T_P = $T_P + 1;
+                } else if ($item['IDKategori'] == '2' || $item['IDKategori'] == 2) {
+                    $T_TP = $T_TP + 1;
+                } else if ($item['IDKategori'] == '3' || $item['IDKategori'] == 3) {
+                    $T_M = $T_M + 1;
                 } else {
                     // Tidak menjawab maka di hitung tidak paham
-                    $T_TP = $T_TP+1;
+                    $T_TP = $T_TP + 1;
                 }
             }
 
             // Hitung persentase
-            $P = ($T_P>0)? ($T_P/$totalP) * 100 : 0;
-            $TP = ($T_TP>0)? ($T_TP/$totalP) * 100 : 0;
-            $M = ($T_M>0)? ($T_M/$totalP) * 100 : 0;
+            $P = ($T_P > 0) ? ($T_P / $totalP) * 100 : 0;
+            $TP = ($T_TP > 0) ? ($T_TP / $totalP) * 100 : 0;
+            $M = ($T_M > 0) ? ($T_M / $totalP) * 100 : 0;
 
             $result = array(
-                'P' => round($P,2),
-                'TP' => round($TP,2),
-                'M' => round($M,2)
+                'P' => round($P, 2),
+                'TP' => round($TP, 2),
+                'M' => round($M, 2)
             );
-
         }
 
         return print_r(json_encode($result));
-
     }
 
-    public function getAnalisis4(){
+    public function getAnalisis4()
+    {
 
         $sch = $this->input->get('sch');
         $g = $this->input->get('g');
@@ -1005,21 +951,21 @@ class C_rest extends CI_Controller {
         // Get total student
         $where = '';
         $whereType2 = '';
-        if($sch!='-'){
-            $where = ' AND Sekolah = "'.$sch.'" ';
-            $whereType2 = ' AND u.Sekolah = "'.$sch.'" ';
+        if ($sch != '-') {
+            $where = ' AND Sekolah = "' . $sch . '" ';
+            $whereType2 = ' AND u.Sekolah = "' . $sch . '" ';
         }
 
         // Jumlah soal
         $q = 'SELECT t.ID FROM testing t  LEFT JOIN user u ON (u.ID = t.IDUser) 
                             WHERE u.Sebagai = "siswa" 
                             AND t.Status="1" AND t.Type = "1"  
-                            AND t.IDGelombang = "'.$g.'" '.$where;
+                            AND t.IDGelombang = "' . $g . '" ' . $where;
 
         $dataSoal = $this->db->query('SELECT t.* FROM testing t 
                                             LEFT JOIN user u ON (u.ID = t.IDUser)
                                             WHERE u.Sebagai = "siswa" AND t.Status="1" 
-                                            AND t.Type = "1" AND t.IDGelombang = "'.$g.'" '.$where)->result_array();
+                                            AND t.Type = "1" AND t.IDGelombang = "' . $g . '" ' . $where)->result_array();
 
         $JumlahSiswa = count($dataSoal);
         $JumlahSoal = 0;
@@ -1027,11 +973,11 @@ class C_rest extends CI_Controller {
         // Query Detail
         $result = [];
         // MEnadaptkan jumlah soal
-        if($JumlahSiswa>0){
+        if ($JumlahSiswa > 0) {
 
 
             $IDGelombang = $dataSoal[0]['IDGelombang'];
-            $dataJumlahSoal = $this->db->get_where('setting_gelombang',array(
+            $dataJumlahSoal = $this->db->get_where('setting_gelombang', array(
                 'ID' => $IDGelombang
             ))->result_array();
 
@@ -1039,20 +985,20 @@ class C_rest extends CI_Controller {
 
             // Get sample ID Soal
             $dataIDSoal = $this->db->query('SELECT IDSoal FROM testing_details 
-                                                            WHERE IDTest = "'.$dataSoal[0]['ID'].'"')
+                                                            WHERE IDTest = "' . $dataSoal[0]['ID'] . '"')
                 ->result_array();
 
 
-            if(count($dataIDSoal)>0){
+            if (count($dataIDSoal) > 0) {
 
 
 
-                foreach ($dataIDSoal AS $item){
+                foreach ($dataIDSoal as $item) {
 
 
                     $IDSoal = $item['IDSoal'];
                     $q_p = 'SELECT td.* FROM testing_details td WHERE td.IDTest 
-                                        IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" AND td.IDKategori = "1" ';
+                                        IN (' . $q . ') AND td.IDSoal = "' . $IDSoal . '" AND td.IDKategori = "1" ';
                     $data_p = $this->db->query($q_p)->result_array();
 
                     $P = count($data_p);
@@ -1061,78 +1007,78 @@ class C_rest extends CI_Controller {
                                             LEFT JOIN testing t ON (t.ID = td.IDTest)
                                             LEFT JOIN soal s ON (s.ID = td.IDSoal)
                                             WHERE td.IDTest 
-                                            IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" 
+                                            IN (' . $q . ') AND td.IDSoal = "' . $IDSoal . '" 
                                             AND (td.IDKategori = "2" OR IDKombinasi IS NULL OR td.IDKombinasi = "")';
                     $data_tp = $this->db->query($q_tp)->result_array();
 
-                    $TP = ($Type==2 || $Type=='2') ? 0 : count($data_tp);
+                    $TP = ($Type == 2 || $Type == '2') ? 0 : count($data_tp);
 
                     $q_m = 'SELECT td.*, t.Token, s.IDIndikator  FROM testing_details td 
                                             LEFT JOIN testing t ON (t.ID = td.IDTest)
                                             LEFT JOIN soal s ON (s.ID = td.IDSoal)
                                             WHERE td.IDTest 
-                                            IN ('.$q.') AND td.IDSoal = "'.$IDSoal.'" 
+                                            IN (' . $q . ') AND td.IDSoal = "' . $IDSoal . '" 
                                             AND td.IDKategori = "3"';
                     $data_m = $this->db->query($q_m)->result_array();
 
-                    $M = ($Type==2 || $Type=='2') ? 0 : count($data_m);
+                    $M = ($Type == 2 || $Type == '2') ? 0 : count($data_m);
 
                     $data2_tp_q = '';
                     $data2_tp = '';
                     $data2_m_q = '';
                     $data2_m = '';
 
-                    if($Type==2 || $Type=='2'){
+                    if ($Type == 2 || $Type == '2') {
 
-                        if(count($data_tp)>0){
-                            for($t=0;$t<count($data_tp);$t++){
+                        if (count($data_tp) > 0) {
+                            for ($t = 0; $t < count($data_tp); $t++) {
 
                                 // Cek ID soal
                                 $checkIDSoal = $this->db->query('SELECT ID FROM soal 
-                                                                        WHERE IDIndikator = "'.$data_tp[$t]['IDIndikator'].'" 
+                                                                        WHERE IDIndikator = "' . $data_tp[$t]['IDIndikator'] . '" 
                                                                         AND TypeSoal = "2" ')->result_array();
 
-                                $IDsoal2 = (count($checkIDSoal)>0) ? $checkIDSoal[0]['ID'] : $IDSoal;
+                                $IDsoal2 = (count($checkIDSoal) > 0) ? $checkIDSoal[0]['ID'] : $IDSoal;
 
-                                $data2_tp_q = 'SELECT td.IDKategori FROM testing_details td LEFT JOIN testing t ON (t.ID = td.IDTest) LEFT JOIN user u ON (u.ID = t.IDUser) WHERE t.Token = "'.$data_tp[$t]['Token'].'" AND t.IDGelombang = "'.$g.'" AND td.IDSoal = "'.$IDsoal2.'" '.$whereType2;
+                                $data2_tp_q = 'SELECT td.IDKategori FROM testing_details td LEFT JOIN testing t ON (t.ID = td.IDTest) LEFT JOIN user u ON (u.ID = t.IDUser) WHERE t.Token = "' . $data_tp[$t]['Token'] . '" AND t.IDGelombang = "' . $g . '" AND td.IDSoal = "' . $IDsoal2 . '" ' . $whereType2;
 
                                 $data2_tp = $this->db->query($data2_tp_q)->result_array();
 
-                                if(count($data2_tp)>0){
-                                    foreach ($data2_tp AS $item2_tp){
-                                        if($item2_tp['IDKategori']=='1' || $item2_tp['IDKategori']==1){
-                                            $P = $P+1;
-                                        } else if($item2_tp['IDKategori']=='3' || $item2_tp['IDKategori']==3){
-                                            $M = $M+1;
+                                if (count($data2_tp) > 0) {
+                                    foreach ($data2_tp as $item2_tp) {
+                                        if ($item2_tp['IDKategori'] == '1' || $item2_tp['IDKategori'] == 1) {
+                                            $P = $P + 1;
+                                        } else if ($item2_tp['IDKategori'] == '3' || $item2_tp['IDKategori'] == 3) {
+                                            $M = $M + 1;
                                         } else {
-                                            $TP = $TP+1;
+                                            $TP = $TP + 1;
                                         }
                                     }
                                 }
                             }
                         }
 
-                        if(count($data_m)>0){
-                            for($t=0;$t<count($data_m);$t++){
+                        if (count($data_m) > 0) {
+                            for ($t = 0; $t < count($data_m); $t++) {
 
                                 // Cek ID soal
                                 $checkIDSoal = $this->db->query('SELECT ID FROM soal 
-                                                                        WHERE IDIndikator = "'.$data_m[$t]['IDIndikator'].'" 
+                                                                        WHERE IDIndikator = "' . $data_m[$t]['IDIndikator'] . '" 
                                                                         AND TypeSoal = "2" ')->result_array();
 
-                                $IDsoal3 = (count($checkIDSoal)>0) ? $checkIDSoal[0]['ID'] : $IDSoal;
+                                $IDsoal3 = (count($checkIDSoal) > 0) ? $checkIDSoal[0]['ID'] : $IDSoal;
 
-                                $data2_m_q = 'SELECT td.IDKategori FROM testing_details td LEFT JOIN testing t ON (t.ID = td.IDTest) LEFT JOIN user u ON (u.ID = t.IDUser) WHERE t.Token = "'.$data_m[$t]['Token'].'" AND t.IDGelombang = "'.$g.'" AND td.IDSoal = "'.$IDsoal3.'" '.$whereType2;
+                                $data2_m_q = 'SELECT td.IDKategori FROM testing_details td LEFT JOIN testing t ON (t.ID = td.IDTest) LEFT JOIN user u ON (u.ID = t.IDUser) WHERE t.Token = "' . $data_m[$t]['Token'] . '" AND t.IDGelombang = "' . $g . '" AND td.IDSoal = "' . $IDsoal3 . '" ' . $whereType2;
                                 $data2_m = $this->db->query($data2_m_q)->result_array();
 
-                                if(count($data2_m)>0){
-                                    foreach ($data2_m AS $item2_m){
-                                        if($item2_m['IDKategori']=='1' || $item2_m['IDKategori']==1){
-                                            $P = $P+1;
-                                        } else if($item2_m['IDKategori']=='3' || $item2_m['IDKategori']==3){
-                                            $M = $M+1;
+                                if (count($data2_m) > 0) {
+                                    foreach ($data2_m as $item2_m) {
+                                        if ($item2_m['IDKategori'] == '1' || $item2_m['IDKategori'] == 1) {
+                                            $P = $P + 1;
+                                        } else if ($item2_m['IDKategori'] == '3' || $item2_m['IDKategori'] == 3) {
+                                            $M = $M + 1;
                                         } else {
-                                            $TP = $TP+1;
+                                            $TP = $TP + 1;
                                         }
                                     }
                                 }
@@ -1142,7 +1088,7 @@ class C_rest extends CI_Controller {
 
                     $res = array(
                         'IDSoal' => $IDSoal,
-//                        'q_p' => $q_p,
+                        //                        'q_p' => $q_p,
                         'q_tp' => $data_tp,
                         'q_m' => $data_m,
                         'data2_tp_q' => $data2_tp_q,
@@ -1154,12 +1100,9 @@ class C_rest extends CI_Controller {
                         'M' => $M
                     );
 
-                    array_push($result,$res);
+                    array_push($result, $res);
                 }
-
             }
-
-
         }
 
         // Jumlah Keseluruhan
@@ -1173,111 +1116,103 @@ class C_rest extends CI_Controller {
         );
 
         return print_r(json_encode($r));
-
     }
 
-    public function getAnalisis5($IDSekolah,$IDGelombang){
+    public function getAnalisis5($IDSekolah, $IDGelombang)
+    {
 
         $data = $this->db->query('SELECT u.* FROM user u 
-                                          WHERE u.Sekolah = "'.$IDSekolah.'" 
+                                          WHERE u.Sekolah = "' . $IDSekolah . '" 
                                           AND u.Sebagai = "siswa" 
                                           ORDER BY u.ID ASC')->result_array();
 
         $result = [];
-        if(count($data)>0){
+        if (count($data) > 0) {
 
-            for($i=0;$i<count($data);$i++){
+            for ($i = 0; $i < count($data); $i++) {
 
                 // Get data Gelombang
-                $dataG = $this->db->get_where('setting_gelombang',array(
+                $dataG = $this->db->get_where('setting_gelombang', array(
                     'ID' => $IDGelombang
                 ))->result_array();
 
-                $BanyakSoal = (count($dataG)>0) ? $dataG[0]['Nilai'] : 0 ;
+                $BanyakSoal = (count($dataG) > 0) ? $dataG[0]['Nilai'] : 0;
 
                 // Testing 1
                 $dataTest_1 = $this->db->query('SELECT td.* FROM testing_details td 
                                                         LEFT JOIN testing t ON (t.ID = td.IDTest)
                                                         LEFT JOIN setting_gelombang sg ON (sg.ID = t.IDGelombang)
-                                                        WHERE t.IDUser = "'.$data[$i]['ID'].'" 
-                                                        AND t.IDGelombang = "'.$IDGelombang.'"
+                                                        WHERE t.IDUser = "' . $data[$i]['ID'] . '" 
+                                                        AND t.IDGelombang = "' . $IDGelombang . '"
                                                         AND t.Type = "1" AND t.Status = "1" ')->result_array();
 
                 $dataTest_2 = $this->db->query('SELECT td.* FROM testing_details td 
                                                         LEFT JOIN testing t ON (t.ID = td.IDTest)
                                                         LEFT JOIN setting_gelombang sg ON (sg.ID = t.IDGelombang)
-                                                        WHERE t.IDUser = "'.$data[$i]['ID'].'" 
-                                                        AND t.IDGelombang = "'.$IDGelombang.'"
+                                                        WHERE t.IDUser = "' . $data[$i]['ID'] . '" 
+                                                        AND t.IDGelombang = "' . $IDGelombang . '"
                                                         AND t.Type = "2" AND t.Status = "1" ')->result_array();
 
-                if(count($dataTest_1)>0){
+                if (count($dataTest_1) > 0) {
                     $data[$i]['BanyakSoal'] = $BanyakSoal;
                     $data[$i]['dataTest_1'] = $dataTest_1;
                     $data[$i]['dataTest_2'] = $dataTest_2;
 
-                    array_push($result,$data[$i]);
+                    array_push($result, $data[$i]);
                 }
-
             }
-
         }
 
         return print_r(json_encode($result));
-
     }
 
-    public function getAnalisis6($IDSekolah,$IDGelombang){
+    public function getAnalisis6($IDSekolah, $IDGelombang)
+    {
 
         // Get data student
 
         $data = $this->db->query('SELECT u.* FROM user u 
-                                          WHERE u.Sekolah = "'.$IDSekolah.'" 
+                                          WHERE u.Sekolah = "' . $IDSekolah . '" 
                                           AND u.Sebagai = "siswa" 
                                           ORDER BY u.ID ASC')->result_array();
 
         $result = [];
-        if(count($data)>0){
+        if (count($data) > 0) {
 
-            for($i=0;$i<count($data);$i++){
+            for ($i = 0; $i < count($data); $i++) {
 
                 // Get data Gelombang
-                $dataG = $this->db->get_where('setting_gelombang',array(
+                $dataG = $this->db->get_where('setting_gelombang', array(
                     'ID' => $IDGelombang
                 ))->result_array();
 
-                $BanyakSoal = (count($dataG)>0) ? $dataG[0]['Nilai'] : 0 ;
+                $BanyakSoal = (count($dataG) > 0) ? $dataG[0]['Nilai'] : 0;
 
                 // Testing 1
                 $dataTest_1 = $this->db->query('SELECT td.* FROM testing_details td 
                                                         LEFT JOIN testing t ON (t.ID = td.IDTest)
                                                         LEFT JOIN setting_gelombang sg ON (sg.ID = t.IDGelombang)
-                                                        WHERE t.IDUser = "'.$data[$i]['ID'].'" 
-                                                        AND t.IDGelombang = "'.$IDGelombang.'"
+                                                        WHERE t.IDUser = "' . $data[$i]['ID'] . '" 
+                                                        AND t.IDGelombang = "' . $IDGelombang . '"
                                                         AND t.Type = "1" AND t.Status = "1" ')->result_array();
 
                 $dataTest_2 = $this->db->query('SELECT td.* FROM testing_details td 
                                                         LEFT JOIN testing t ON (t.ID = td.IDTest)
                                                         LEFT JOIN setting_gelombang sg ON (sg.ID = t.IDGelombang)
-                                                        WHERE t.IDUser = "'.$data[$i]['ID'].'" 
-                                                        AND t.IDGelombang = "'.$IDGelombang.'"
+                                                        WHERE t.IDUser = "' . $data[$i]['ID'] . '" 
+                                                        AND t.IDGelombang = "' . $IDGelombang . '"
                                                         AND t.Type = "2" AND t.Status = "1" ')->result_array();
 
-                if(count($dataTest_1)>0){
+                if (count($dataTest_1) > 0) {
                     $data[$i]['BanyakSoal'] = $BanyakSoal;
                     $data[$i]['dataTest_1'] = $dataTest_1;
                     $data[$i]['dataTest_2'] = $dataTest_2;
 
-                    array_push($result,$data[$i]);
+                    array_push($result, $data[$i]);
                 }
-
             }
-
         }
 
         return print_r(json_encode($result));
-
-
     }
-
-
 }

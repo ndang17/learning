@@ -11,10 +11,12 @@
 <div class="row" style="margin-top: 20px;">
 
     <div class="col-md-6">
-<!--        <div class="form-group">-->
-<!--            <label>Jumlah soal untuk tes</label>-->
-<!--            <input class="form-control" id="formSoal" value="--><?//= $DataSeting[0]['Nilai']; ?><!--">-->
-<!--        </div>-->
+        <!--        <div class="form-group">-->
+        <!--            <label>Jumlah soal untuk tes</label>-->
+        <!--            <input class="form-control" id="formSoal" value="--><? //= $DataSeting[0]['Nilai']; 
+                                                                            ?>
+        <!--">-->
+        <!--        </div>-->
         <h3>Mengatur Waktu Pengerjaan</h3>
         <div class="form-group">
             <label>Waktu pengerjaan (menit)</label>
@@ -23,8 +25,8 @@
         <div class="form-group">
             <label>Button Remidial</label>
             <select class="form-control" id="formBtnRemidial">
-                <option value="1" <?= ($DataSeting[2]['Nilai']=='1' || $DataSeting[2]['Nilai']==1) ? 'selected' : ''; ?>>Tampilkan</option>
-                <option value="0" <?= ($DataSeting[2]['Nilai']=='0' || $DataSeting[2]['Nilai']==0) ? 'selected' : ''; ?>>Sembunyikan</option>
+                <option value="1" <?= ($DataSeting[2]['Nilai'] == '1' || $DataSeting[2]['Nilai'] == 1) ? 'selected' : ''; ?>>Tampilkan</option>
+                <option value="0" <?= ($DataSeting[2]['Nilai'] == '0' || $DataSeting[2]['Nilai'] == 0) ? 'selected' : ''; ?>>Sembunyikan</option>
             </select>
         </div>
 
@@ -37,7 +39,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <hr/>
+        <hr />
         <h3>Mengatur Jumlah Soal dan Gelombang Pengerjaan</h3>
     </div>
     <div class="">
@@ -66,12 +68,12 @@
         <div class="col-md-8">
             <table class="table">
                 <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Keterangan</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
+                    <tr>
+                        <th>No</th>
+                        <th>Keterangan</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
                 </thead>
                 <tbody id="showSetGel"></tbody>
             </table>
@@ -82,7 +84,7 @@
 
 <div class="row" style="margin-bottom: 70px;">
     <div class="col-md-12">
-        <hr/>
+        <hr />
         <h3>Aturan Pengerjaan</h3>
         <textarea id="formAturan"></textarea>
 
@@ -93,14 +95,13 @@
 </div>
 
 <script>
-
-    $(document).ready(function () {
+    $(document).ready(function() {
         loadDataGel();
 
         getAturan();
 
         $('#formAturan').summernote({
-            height : 200,
+            height: 200,
             // width : 700,
             toolbar: [
                 // [groupName, [list of button]]
@@ -114,33 +115,35 @@
         });
     });
 
-    $('#btnSave').click(function () {
+    $('#btnSave').click(function() {
+
         var formSoal = $('#formSoal').val();
         var formDurasi = $('#formDurasi').val();
         var formBtnRemidial = $('#formBtnRemidial').val();
 
-        if(formSoal!='' && formSoal!=null &&
-            formDurasi!='' && formDurasi!=null &&
-            formBtnRemidial !='' && formBtnRemidial!=null){
+        if (formDurasi != '' && formDurasi != null &&
+            formBtnRemidial != '' && formBtnRemidial != null) {
 
             loadingButton('#btnSave');
 
-            var url = base_url_js+'__crudMenuAdmin';
+            var url = base_url_js + '__crudMenuAdmin';
 
             var formData = {
-                action : 'setting',
-                Waktu : formDurasi,
-                Soal : formSoal,
-                Btn : formBtnRemidial
+                action: 'setting',
+                Waktu: formDurasi,
+                Soal: formSoal,
+                Btn: formBtnRemidial
             };
 
-            $.post(url,{formData:formData},function (result) {
+            $.post(url, {
+                formData: formData
+            }, function(result) {
 
-                toastr.success('Pengaturan tersimpan','Sukses');
+                toastr.success('Pengaturan tersimpan', 'Sukses');
 
-                setTimeout(function () {
-                    $('#btnSave').html('Simpan').prop('disabled',false);
-                },500)
+                setTimeout(function() {
+                    $('#btnSave').html('Simpan').prop('disabled', false);
+                }, 500)
 
             });
 
@@ -154,26 +157,28 @@
     function loadDataGel() {
 
         var formData = {
-            action : 'gelombangRead',
+            action: 'gelombangRead',
         };
-        var url = base_url_js+'__crudMenuAdmin';
+        var url = base_url_js + '__crudMenuAdmin';
 
-        $.post(url,{formData:formData},function (jsonResult) {
+        $.post(url, {
+            formData: formData
+        }, function(jsonResult) {
 
             $('#showSetGel').empty();
 
             $('#dataGel').val(JSON.stringify(jsonResult));
 
-            if(jsonResult.length>0){
+            if (jsonResult.length > 0) {
 
-                $.each(jsonResult, function (i,v) {
+                $.each(jsonResult, function(i, v) {
 
-                    var s = (v.Status=='0') ? 'Non aktif' : 'Aktif';
+                    var s = (v.Status == '0') ? 'Non aktif' : 'Aktif';
                     $('#showSetGel').append('<tr>' +
-                        '<td>'+(i + 1)+'</td>' +
-                        '<td>'+v.Nama+'<br/>Jumlah Soal : '+v.Nilai+'</td>' +
-                        '<td>'+s+'</td>' +
-                        '<td><button class="btnEdit" data-id="'+v.ID+'">Edit</button></td>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>' + v.Nama + '<br/>Jumlah Soal : ' + v.Nilai + '</td>' +
+                        '<td>' + s + '</td>' +
+                        '<td><button class="btnEdit" data-id="' + v.ID + '">Edit</button></td>' +
                         '</tr>');
                 });
             } else {
@@ -183,14 +188,16 @@
         });
     }
 
-    $(document).on('click','.btnEdit',function () {
+    $(document).on('click', '.btnEdit', function() {
 
         var dataGel = $('#dataGel').val();
 
         var dataGel = JSON.parse(dataGel);
         var ID = $(this).attr('data-id');
 
-        var result = $.grep(dataGel, function(e){ return e.ID == ID; });
+        var result = $.grep(dataGel, function(e) {
+            return e.ID == ID;
+        });
 
         var d = result[0];
 
@@ -203,7 +210,7 @@
 
     });
 
-    $('#simpanGel').click(function () {
+    $('#simpanGel').click(function() {
 
 
         var ID = $('#formID').val();
@@ -212,50 +219,54 @@
         var Status = $('#formStatus').val();
 
 
-        if(Nama!='' && Nama!=null &&
-            Nilai!='' && Nilai!=null){
+        if (Nama != '' && Nama != null &&
+            Nilai != '' && Nilai != null) {
             var formData = {
-                action : (ID!='' && ID!=null) ? 'gelombangUpdate' : 'gelombangInsert',
-                ID : ID,
-                formD : {
-                    Nama : Nama,
-                    Nilai : Nilai,
-                    Status : Status
+                action: (ID != '' && ID != null) ? 'gelombangUpdate' : 'gelombangInsert',
+                ID: ID,
+                formD: {
+                    Nama: Nama,
+                    Nilai: Nilai,
+                    Status: Status
                 }
             };
 
-            var url = base_url_js+'__crudMenuAdmin';
+            var url = base_url_js + '__crudMenuAdmin';
 
-            $.post(url,{formData:formData},function (jsonResult) {
+            $.post(url, {
+                formData: formData
+            }, function(jsonResult) {
 
                 $('#formID').val('');
                 $('#formNama').val('');
                 $('#formNilai').val('');
                 $('#formStatus').val('0');
 
-                setTimeout(function () {
+                setTimeout(function() {
                     alert('Data tersimpan');
                     loadDataGel();
-                },500);
+                }, 500);
             });
         }
 
     });
 
-    $('#btnSaveAturan').click(function () {
+    $('#btnSaveAturan').click(function() {
 
         var formAturan = $('#formAturan').val();
-        if(formAturan!='' && formAturan!=null){
+        if (formAturan != '' && formAturan != null) {
 
             var formData = {
-                action : 'insertAturan',
-                Deskripsi : formAturan
+                action: 'insertAturan',
+                Deskripsi: formAturan
             };
 
-            var url = base_url_js+'__crudMenuAdmin';
+            var url = base_url_js + '__crudMenuAdmin';
 
-            $.post(url,{formData:formData},function (Result) {
-                toastr.success('Data tersimpan','Sukses');
+            $.post(url, {
+                formData: formData
+            }, function(Result) {
+                toastr.success('Data tersimpan', 'Sukses');
             });
 
         }
@@ -264,18 +275,19 @@
 
     function getAturan() {
         var formData = {
-            action : 'getAturan'
+            action: 'getAturan'
         };
 
-        var url = base_url_js+'__crudMenuAdmin';
-        $.post(url,{formData:formData},function (jsonResult) {
+        var url = base_url_js + '__crudMenuAdmin';
+        $.post(url, {
+            formData: formData
+        }, function(jsonResult) {
 
-            if(jsonResult.length>0){
+            if (jsonResult.length > 0) {
                 $('#formAturan').summernote('code', jsonResult[0].Deskripsi);
             } else {
                 $('#formAturan').summernote('code', '');
             }
         });
     }
-
 </script>
