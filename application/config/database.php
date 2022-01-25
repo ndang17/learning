@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 
 $active_group = 'default';
@@ -11,11 +11,11 @@ $db['default'] = array(
 
 	'username' => 'root',
 	'password' => '',
-	'database' => 'learning',
+	'database' => 'learning_2',
 
-//    'username' => 'ediw2554_nandang',
-//    'password' => 'nandang123',
-//    'database' => 'ediw2554_learning',
+	//    'username' => 'ediw2554_nandang',
+	//    'password' => 'nandang123',
+	//    'database' => 'ediw2554_learning',
 
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

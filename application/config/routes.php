@@ -1,12 +1,12 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 $route['default_controller'] = 'c_home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 
-$route['logOut'] = 'c_home/logOut';
+$route['logOut'] = 'c_home';
 
 $route['soal/(:num)'] = 'c_home/loadSoal/$1';
 $route['hasil/(:num)'] = 'c_home/loadHasil/$1';
@@ -59,6 +59,3 @@ $route['__getAnalisis6/(:num)/(:num)'] = 'c_rest/getAnalisis6/$1/$2';
 // Upload image
 $route['post/upload_image'] = 'c_home/upload_image';
 $route['post/delete_image'] = 'c_home/delete_image';
-
-
-
