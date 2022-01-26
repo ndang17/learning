@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,11 +39,10 @@
     <!-- Canvas -->
     <script type="text/javascript" src="<?php echo base_url('assets/canvas/canvasjs.min.js'); ?>"></script>
 
-<!--     table2excel -->
+    <!--     table2excel -->
     <script type="text/javascript" src="<?php echo base_url('assets/table2excel/jquery.table2excel.min.js'); ?>"></script>
 
     <script>
-
         window.base_url_js = "<?php echo base_url(); ?>";
 
         window.sessionID = "<?php echo $this->session->userdata('ID'); ?>";
@@ -54,7 +54,7 @@
             return str;
         }
 
-        function loadingPage(elm){
+        function loadingPage(elm) {
             $(elm).html('<div class="row">' +
                 '    <div class="col-md-12" style="text-align: center;">' +
                 '        <h4><i class="fa fa-refresh fa-spin fa-fw"></i> Loading...</h4>' +
@@ -62,41 +62,45 @@
                 '</div>');
         }
 
-        function loadSelectOption_sekolah(elm,selected='') {
-            var url = base_url_js+'__selectOption';
+        function loadSelectOption_sekolah(elm, selected = '') {
+            var url = base_url_js + '__selectOption';
 
             var data = {
-                action : 'SO_sekolah'
+                action: 'SO_sekolah'
             };
 
-            $.post(url,{formData : data},function (jsonResult) {
-               // console.log(jsonResult);
-               if(jsonResult.length>0){
+            $.post(url, {
+                formData: data
+            }, function(jsonResult) {
+                // console.log(jsonResult);
+                if (jsonResult.length > 0) {
 
-                   $.each(jsonResult,function (i,v) {
+                    $.each(jsonResult, function(i, v) {
 
-                       $(elm).append('<option value="'+v.ID+'">'+v.Name+'</option>');
-                   })
+                        $(elm).append('<option value="' + v.ID + '">' + v.Name + '</option>');
+                    })
 
-               }
+                }
             });
 
         }
 
-        function loadSelectOption_gelombang(elm,selected='') {
-            var url = base_url_js+'__selectOption';
+        function loadSelectOption_gelombang(elm, selected = '') {
+            var url = base_url_js + '__selectOption';
 
             var data = {
-                action : 'SO_gelombang'
+                action: 'SO_gelombang'
             };
 
-            $.post(url,{formData : data},function (jsonResult) {
+            $.post(url, {
+                formData: data
+            }, function(jsonResult) {
                 console.log(jsonResult);
-                if(jsonResult.length>0){
+                if (jsonResult.length > 0) {
 
-                    $.each(jsonResult,function (i,v) {
+                    $.each(jsonResult, function(i, v) {
 
-                        $(elm).append('<option value="'+v.ID+'" data-n="'+v.Nilai+'">'+v.Nama+'</option>');
+                        $(elm).append('<option value="' + v.ID + '" data-n="' + v.Nilai + '">' + v.Nama + '</option>');
                     })
 
                 }
@@ -104,18 +108,19 @@
         }
 
         function loadingButton(elm) {
-            $(elm).html('<i class="fa fa-refresh fa-spin fa-fw"></i> Loading...').prop('disabled',true);
+            $(elm).html('<i class="fa fa-refresh fa-spin fa-fw"></i> Loading...').prop('disabled', true);
         }
+
         function loadingButtonSM(elm) {
-            $(elm).html('<i class="fa fa-refresh fa-spin fa-fw"></i>').prop('disabled',true);
+            $(elm).html('<i class="fa fa-refresh fa-spin fa-fw"></i>').prop('disabled', true);
         }
 
 
-        function uploadImage(element,image) {
+        function uploadImage(element, image) {
             var data = new FormData();
             data.append("image", image);
             $.ajax({
-                url: "<?php echo site_url('post/upload_image')?>",
+                url: "<?php echo site_url('post/upload_image') ?>",
                 cache: false,
                 contentType: false,
                 processData: false,
@@ -132,50 +137,81 @@
 
         function deleteImage(src) {
             $.ajax({
-                data: {src : src},
+                data: {
+                    src: src
+                },
                 type: "POST",
-                url: "<?php echo site_url('post/delete_image')?>",
+                url: "<?php echo site_url('post/delete_image') ?>",
                 cache: false,
                 success: function(response) {
                     console.log(response);
                 }
             });
         }
-
     </script>
 
     <style>
         .margin-right {
             margin-right: 5px;
         }
+
         body {
             /* 1 7 8 9 */
-            /*background-image: url('*/<?//= base_url("images/bg/1 (9).jpg") ?>/*'); !important;*/
+            /*background-image: url('*/
+            <? //= base_url("images/bg/1 (9).jpg") 
+            ?>
+            /*'); !important;*/
+        }
+
+        .c-corner-label {
+            position: fixed;
+            top: 63px;
+            right: 0;
+            height: 50px;
+            width: 200px;
+            background-color: #ff5722;
+            font-size: 25px;
+            color: #ffffff;
+            text-align: center;
+            padding: 5px 0px 0px 0px;
+
         }
     </style>
 
 </head>
+
 <body>
 
-<?php echo $content; ?>
+    <?php
 
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+    if (IS_TESTING) {
+        echo '<div class="c-corner-label">
+        TESTING
+    </div>';
+    }
+    ?>
+
+    <?php echo $content; ?>
+
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

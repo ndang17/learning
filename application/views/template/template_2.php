@@ -52,10 +52,36 @@
         background-attachment: fixed;
         height: 100vh;
     }
+
+    .c-corner-label {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 50px;
+        width: 200px;
+        background-color: #ff5722;
+        font-size: 25px;
+        color: #ffffff;
+        text-align: center;
+        padding: 5px 0px 0px 0px;
+
+    }
 </style>
 
 <body>
+
+
+    <?php
+    if (IS_TESTING) {
+        echo '<div class="c-corner-label">
+        TESTING
+    </div>';
+    }
+    ?>
+
     <div class="image-container set-full-height" style="background-image: url('<?= base_url('assets/theme/'); ?>img/wizard.jpg')">
+
+
         <!--   Creative Tim Branding   -->
         <a href="<?= base_url(); ?>">
             <div class="logo-container">
@@ -67,6 +93,8 @@
                 </div>
             </div>
         </a>
+
+
 
         <!--  Made With Get Shit Done Kit  -->
         <!-- <a href="" class="made-with-mk">
@@ -113,8 +141,8 @@
                                 <div class="tab-content">
                                     <div class="tab-pane" id="about">
                                         <div class="row">
-                                            <h4 class="info-text"> Kenapa menggunakan e-diagnotic test ?</h4>
                                             <div class="col-sm-10 col-sm-offset-1">
+                                                <h4 class="info-text"> Kenapa menggunakan e-diagnotic test ?</h4>
                                                 <table class="table">
                                                     <tr>
                                                         <td>1.</td>
@@ -178,12 +206,13 @@
                                                 <h4 class="info-text"> Daftar Sebagai Siswa </h4>
                                                 <div class="form-group">
                                                     <label for="">Nama Lengkap</label>
-                                                    <input type="text" class="form-control" placeholder="Nama Lengkap" id="r_Nama">
+                                                    <input type="text" class="form-control" placeholder="Nama Lengkap" id="r_Nama" style="text-transform:uppercase">
                                                     <input class="hide" id="r_Sebagai" value="siswa" type="text">
+                                                    <p class="help-block">Menggunakan Huruf Kapital</p>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="">NIS</label>
-                                                    <input type="text" class="form-control" placeholder="Nomor Induk Siswa" id="r_NIS">
+                                                    <input type="number" class="form-control" placeholder="Nomor Induk Siswa" id="r_NIS">
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="">Kelas</label>
@@ -209,6 +238,7 @@
                                                 <div class="form-group">
                                                     <label for="">Password</label>
                                                     <input type="text" class="form-control" placeholder="Password" id="r_Password">
+                                                    <p class="help-block">Minimal 6 karakter</p>
                                                 </div>
                                                 <div class="form-group">
                                                     <div class="text-right">
@@ -247,7 +277,8 @@
                                                 <div>
                                                     <div class="form-group">
                                                         <label>Nama Lengkap</label>
-                                                        <input class="form-control" autofocus="" placeholder="Nama Lengkap" id="s_Nama">
+                                                        <input class="form-control" autofocus="" placeholder="Nama Lengkap" id="s_Nama" style="text-transform:uppercase">
+                                                        <p class="help-block">Menggunakan Huruf Kapital</p>
                                                         <input class="hide" value="guru" id="s_Sebagai">
                                                     </div>
                                                     <div class="form-group">
@@ -257,11 +288,12 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label>E-mail</label>
-                                                        <input class="form-control" placeholder="E-mail" id="s_Email">
+                                                        <input type="email" class="form-control" placeholder="E-mail" id="s_Email">
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Password</label>
                                                         <input class="form-control" placeholder="Password" id="s_Password">
+                                                        <p class="help-block">Minimal 6 karakter</p>
                                                     </div>
 
                                                     <div class="form-group">
@@ -344,6 +376,12 @@
 
 <script>
     const base_url_js = '<?= base_url(); ?>';
+    const validateEmail = (email) => {
+        return email.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+
     $(document).ready(function() {
         loadBiodata();
         loadSekolah();
@@ -367,7 +405,7 @@
                 })
             }
 
-            $('#f_Sekolah').html(sekolah);
+            $('#r_Sekolah').html(sekolah);
         });
     }
 
@@ -493,7 +531,7 @@
         var Email = $('#r_Email').val();
         var Password = $('#r_Password').val();
 
-        var fill = true;
+        var fill = false;
         if (Sebagai == 'siswa') {
             if (Nama != '' && Nama != null &&
                 NIS != '' && NIS != null &&
@@ -501,10 +539,12 @@
                 Sekolah != '' && Sekolah != null &&
                 Username != '' && Username != null &&
                 Email != '' && Email != null &&
-                Password != '' && Password != null) {
-                fill = true;
-            } else {
-                fill = false;
+                Password != '' && Password != null && Password.length >= 6) {
+                if (validateEmail(Email)) {
+                    fill = true;
+                } else {
+                    alert('Format e-mail tidak sesuai');
+                }
             }
         }
 
@@ -520,7 +560,7 @@
                     NIS: NIS,
                     Kelas: Kelas,
                     Sekolah: Sekolah,
-                    Username: Username,
+                    Username: Username.replaceAll(/\s/g, ''),
                     Email: Email,
                     Password: Password
                 }
@@ -552,15 +592,17 @@
         var Email = $('#s_Email').val();
         var Password = $('#s_Password').val();
 
-        var fill = true;
+        var fill = false;
         if (Sebagai != 'siswa') {
             if (Nama != '' && Nama != null &&
                 Username != '' && Username != null &&
                 Email != '' && Email != null &&
-                Password != '' && Password != null) {
-                fill = true;
-            } else {
-                fill = false;
+                Password != '' && Password != null && Password.length >= 6) {
+                if (validateEmail(Email)) {
+                    fill = true;
+                } else {
+                    alert('Format e-mail tidak sesuai');
+                }
             }
         }
 
