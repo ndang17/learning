@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width" />
 
     <!--     Fonts and icons     -->
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.css" rel="stylesheet">
+    <link href="<?php echo base_url('assets/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet">
 
     <!-- CSS Files -->
     <link href="<?= base_url('assets/theme/'); ?>css/bootstrap.min.css" rel="stylesheet" />
@@ -32,7 +32,18 @@
     .wizard-card[data-color="orange"] .moving-tab {
         text-transform: none;
         font-weight: bold;
+        /* width: 0% !important; */
     }
+
+    @media only screen and (max-device-width: 599px) {
+        .nav-pills>li {
+            width: 25% !important;
+        }
+    }
+
+    /* @media (min-width: @screen-sm-min) {
+        
+    } */
 
     .set-full-height {
         background-repeat: no-repeat;
@@ -91,10 +102,10 @@
 
                                 <div class="wizard-navigation">
                                     <ul>
-                                        <li><a href="#about" data-toggle="tab">Tentang</a></li>
-                                        <li><a href="#account" data-toggle="tab">Siswa</a></li>
-                                        <li><a href="#address" data-toggle="tab">Guru</a></li>
-                                        <li><a href="#admin" data-toggle="tab">Admin</a></li>
+                                        <li style="width:25% !important;"><a href="#about" data-toggle="tab">Tentang</a></li>
+                                        <li style="width:25% !important;"><a href="#account" data-toggle="tab">Siswa</a></li>
+                                        <li style="width:25% !important;"><a href="#address" data-toggle="tab">Guru</a></li>
+                                        <li style="width:25% !important;"><a href="#admin" data-toggle="tab">Admin</a></li>
                                     </ul>
 
                                 </div>
