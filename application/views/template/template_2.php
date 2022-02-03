@@ -592,17 +592,21 @@
         var Email = $('#s_Email').val();
         var Password = $('#s_Password').val();
 
+        console.log('Nama', Nama);
+        console.log('Sebagai', Sebagai);
+        console.log('Username', Username);
+        console.log('Email', Email);
+        console.log('Password', Password);
+
         var fill = false;
-        if (Sebagai != 'siswa') {
-            if (Nama != '' && Nama != null &&
-                Username != '' && Username != null &&
-                Email != '' && Email != null &&
-                Password != '' && Password != null && Password.length >= 6) {
-                if (validateEmail(Email)) {
-                    fill = true;
-                } else {
-                    alert('Format e-mail tidak sesuai');
-                }
+        if (Nama != '' && Nama != null &&
+            Username != '' && Username != null &&
+            Email != '' && Email != null &&
+            Password != '' && Password != null && Password.length >= 6) {
+            if (validateEmail(Email)) {
+                fill = true;
+            } else {
+                alert('Format e-mail tidak sesuai');
             }
         }
 
@@ -615,9 +619,6 @@
                 dataInsert: {
                     Nama: Nama,
                     Sebagai: Sebagai,
-                    NIS: NIS,
-                    Kelas: Kelas,
-                    Sekolah: Sekolah,
                     Username: Username,
                     Email: Email,
                     Password: Password
@@ -633,6 +634,11 @@
                 setTimeout(function() {
                     // $('#myModal').modal('hide');
                     alert('Pendaftaran berhasil');
+
+                    $('#s_Nama').val('');
+                    $('#s_Username').val('');
+                    $('#s_Email').val('');
+                    $('#s_Password').val('');
                 }, 500);
 
             });
